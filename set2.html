@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>운율 청취 실험</title>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --paper: #ffffff;
+    --line: #d8d4cb;
+    --accent: #3a5a7a;
+    --accent-soft: #e8eef3;
+    --muted: #6b6b6b;
+    --card-bg: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #ececec;
+      --paper: #16181c;
+      --line: #3a3d42;
+      --accent: #7fa8d0;
+      --accent-soft: #26313d;
+      --muted: #9a9a9a;
+      --card-bg: #1e2126;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  .card { width: 100%; max-width: 560px; }
+  h1 { font-size: 22px; font-weight: 400; letter-spacing: 0.02em; margin: 0 0 4px 0; }
+  .subtitle { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px; color: var(--muted); margin-bottom: 32px; }
+  .progress-track { height: 2px; background: var(--line); margin-bottom: 40px; position: relative; }
+  .progress-fill { height: 2px; background: var(--accent); transition: width 0.3s ease; }
+  .progress-label { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 12px; color: var(--muted); margin-top: 8px; letter-spacing: 0.04em; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+  label { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px; color: var(--muted); display: block; margin-bottom: 8px; }
+  input[type="text"] { width: 100%; padding: 12px 14px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 15px; border: 1px solid var(--line); background: var(--card-bg); color: var(--ink); border-radius: 2px; margin-bottom: 24px; }
+  input[type="text"]:focus { outline: none; border-color: var(--accent); }
+  .instructions { font-size: 15px; line-height: 1.7; margin-bottom: 28px; }
+  .instructions h2 { font-size: 16px; font-weight: 400; margin: 24px 0 10px 0; }
+  .instructions strong { font-weight: 700; }
+  .instructions ul { margin: 8px 0; padding-left: 20px; }
+  .instructions li { margin-bottom: 6px; }
+  .pitch-figure { margin: 20px 0; padding: 16px 12px; background: var(--card-bg); border: 1px solid var(--line); border-radius: 4px; }
+  .pitch-figure svg { width: 100%; height: auto; display: block; }
+  .pitch-caption { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 12px; color: var(--muted); text-align: center; margin-top: 8px; }
+  audio { width: 100%; margin-bottom: 28px; }
+  #audioDiag { display:none; font-family:-apple-system,sans-serif; font-size:12px; color:#b3261e; background:#fdecea; border:1px solid #f5c2c0; border-radius:4px; padding:10px 12px; margin:-16px 0 20px 0; }
+  .prompt { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 15px; margin-bottom: 20px; }
+  .choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+  .choice { font-family: -apple-system, BlinkMacSystemFont, sans-serif; text-align: left; padding: 14px 18px; border: 1px solid var(--line); background: var(--card-bg); color: var(--ink); border-radius: 2px; font-size: 15px; cursor: pointer; transition: border-color 0.15s ease, background 0.15s ease; }
+  .choice:hover { border-color: var(--accent); }
+  .choice.selected { border-color: var(--accent); background: var(--accent-soft); }
+  .choice:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button.primary { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--accent); color: white; border: none; padding: 13px 26px; font-size: 14px; border-radius: 2px; cursor: pointer; letter-spacing: 0.02em; }
+  button.primary:disabled { background: var(--line); cursor: not-allowed; }
+  button.primary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .footer-row { display: flex; justify-content: flex-end; gap: 10px; align-items: center; }
+  .footer-note { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 12px; color: var(--muted); margin-right: auto; }
+  .summary { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 15px; line-height: 1.7; margin-bottom: 28px; }
+
+  .practice-item {
+    margin-bottom: 24px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--card-bg);
+  }
+  .practice-item h3 {
+    font-size: 14px;
+    font-weight: 400;
+    margin: 0 0 12px 0;
+    color: var(--muted);
+  }
+  .practice-audio-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .practice-audio-row label {
+    margin-bottom: 2px;
+  }
+  .practice-audio-row audio {
+    margin-bottom: 0;
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <h1>운율 청취 실험</h1>
+  <div class="subtitle">소리를 듣고, 가장 가깝게 느껴지는 리듬을 골라주세요</div>
+
+  <div class="progress-track" id="progressTrack" style="display:none;">
+    <div class="progress-fill" id="progressFill" style="width:0%;"></div>
+  </div>
+  <div class="progress-label" id="progressLabel" style="display:none;"></div>
+
+  <div class="screen active" id="screen-start">
+    <div class="instructions">
+      <p>상상해 보세요. 모국어 외에 당신이 조금이라도 접해본 외국어를 떠올려 보세요.
+      우리는 그 언어를 원어민 수준으로 알지 못하더라도, 몇 번 듣고 익숙해지면
+      "아, 이거 프랑스어 같다" 혹은 "이건 일본어처럼 들린다"고 곧잘 유추해냅니다.
+      단어 뜻을 하나도 몰라도 말이죠.</p>
+      <p>이게 가능한 이유는, 각 언어가 고유의 <strong>prosody</strong>(운율)를 갖고 있기 때문입니다.</p>
+      <p>이건 언어 전체에만 해당하는 얘기가 아닙니다. 우리가 매일 말하는 수많은 단어와
+      표현 하나하나도 저마다 고유한 운율을 갖고 있어요. 예를 들어 아래 그림을 보시면,
+      "banana"는 가운데 음절(<strong>NA</strong>)에서 소리가 높아지고, "immediately"는
+      두 번째 음절(<strong>ME</strong>)에서 강세가 실리며 이후로는 점차 낮아지는 흐름을
+      보입니다. 이렇게 각 단어는 고유의 강세, 리듬, 휴지의 패턴을 갖고 있고, 우리는
+      이걸 <strong>prosody</strong>라고 부릅니다.</p>
+
+      <div class="pitch-figure">
+        <svg viewBox="0 0 680 400" role="img" aria-label="banana와 immediately의 피치 곡선 예시">
+          <title>banana와 immediately의 피치 곡선 예시</title>
+          <desc>각 단어의 음절별 높낮이를 곡선으로 표현하고, 강세 음절을 강조 표시한 그림</desc>
+          <line x1="80" y1="155" x2="600" y2="155" stroke="#d8d4cb" stroke-width="0.5" stroke-dasharray="3 4"/>
+          <path d="M140,140 Q220,80 300,90 Q380,100 460,115" fill="none" stroke="#BA7517" stroke-width="2"/>
+          <circle cx="140" cy="140" r="3.5" fill="#6b6b6b"/>
+          <circle cx="460" cy="115" r="3.5" fill="#6b6b6b"/>
+          <circle cx="300" cy="90" r="6" fill="#FAC775" stroke="#854F0B" stroke-width="0.5"/>
+          <text x="140" y="175" text-anchor="middle" font-size="14" fill="#6b6b6b" font-family="-apple-system,sans-serif">ba</text>
+          <text x="300" y="175" text-anchor="middle" font-size="14" font-weight="700" fill="#854F0B" font-family="-apple-system,sans-serif">NA</text>
+          <text x="460" y="175" text-anchor="middle" font-size="14" fill="#6b6b6b" font-family="-apple-system,sans-serif">na</text>
+          <text x="80" y="30" font-size="14" fill="#1a1a1a" font-family="-apple-system,sans-serif">banana</text>
+          <line x1="60" y1="355" x2="620" y2="355" stroke="#d8d4cb" stroke-width="0.5" stroke-dasharray="3 4"/>
+          <path d="M100,340 Q160,300 220,285 Q280,300 340,318 Q400,328 460,335 Q520,340 580,345" fill="none" stroke="#BA7517" stroke-width="2"/>
+          <circle cx="100" cy="340" r="3.5" fill="#6b6b6b"/>
+          <circle cx="340" cy="318" r="3.5" fill="#6b6b6b"/>
+          <circle cx="460" cy="335" r="3.5" fill="#6b6b6b"/>
+          <circle cx="580" cy="345" r="3.5" fill="#6b6b6b"/>
+          <circle cx="220" cy="285" r="6" fill="#FAC775" stroke="#854F0B" stroke-width="0.5"/>
+          <text x="100" y="372" text-anchor="middle" font-size="14" fill="#6b6b6b" font-family="-apple-system,sans-serif">im</text>
+          <text x="220" y="372" text-anchor="middle" font-size="14" font-weight="700" fill="#854F0B" font-family="-apple-system,sans-serif">ME</text>
+          <text x="340" y="372" text-anchor="middle" font-size="14" fill="#6b6b6b" font-family="-apple-system,sans-serif">di</text>
+          <text x="460" y="372" text-anchor="middle" font-size="14" fill="#6b6b6b" font-family="-apple-system,sans-serif">ate</text>
+          <text x="580" y="372" text-anchor="middle" font-size="14" fill="#6b6b6b" font-family="-apple-system,sans-serif">ly</text>
+          <text x="60" y="230" font-size="14" fill="#1a1a1a" font-family="-apple-system,sans-serif">immediately</text>
+        </svg>
+        <div class="pitch-caption">단어별 음절 높낮이 예시 (강조된 음절이 강세 위치)</div>
+      </div>
+
+      <h2>이 실험이 측정하는 것</h2>
+      <p>이번 태스크는 당신이 이러한 prosody에 대한 지식, 즉
+      <strong>prosodic knowledge</strong>를 얼마나 갖고 있는지를 알아보는 실험입니다.</p>
+      <p>구체적으로는, 실제로 존재하지 않는 무의미한 소리(지블리시, gibberish)를
+      들려드릴 거예요. 이 소리들은 철자와 발음은 실제 영어 단어와 다르지만,
+      <strong>강세와 리듬만큼은 특정 영어 단어의 것을 그대로 가져와</strong> 만들어졌습니다.
+      예를 들어 "banana"의 강세 패턴(약-강-약)을 그대로 가진 채 완전히 다른 소리로
+      읽은 것이 하나의 문항이 됩니다.</p>
+      <p>당신이 할 일은 간단합니다. <strong>소리를 듣고, 그 소리의 리듬이 어떤 실제
+      단어와 가장 비슷하게 느껴지는지 고르는 것</strong>입니다. 단어의 뜻을 몰라도,
+      심지어 그 소리가 무엇인지 전혀 감이 안 잡혀도 괜찮습니다. 우리가 보고 싶은 건
+      여러분이 정답을 논리적으로 추론해내는 능력이 아니라, 순간적으로 느껴지는
+      리듬의 유사성이니까요.</p>
+
+      <h2>참고해 주세요</h2>
+      <ul>
+        <li>이건 영어 실력을 테스트하는 시험이 아닙니다.</li>
+        <li>헷갈리거나 확신이 안 서도 괜찮습니다. 첫 느낌, 직관을 따라 골라 주세요.</li>
+        <li>조용한 환경에서 헤드폰이나 이어폰을 착용하고 들어주시면 좋습니다.</li>
+        <li>각 문항은 여러 번 들으셔도 됩니다.</li>
+      </ul>
+    </div>
+
+    <label for="participantId">참가자 ID</label>
+    <input type="text" id="participantId" placeholder="예: P01 또는 본인 이름">
+    <div class="footer-row">
+      <button class="primary" id="startBtn">시작하기</button>
+    </div>
+  </div>
+
+  <!-- Screen: practice -->
+  <div class="screen" id="screen-practice">
+    <div class="instructions">
+      <p>본 문제를 풀기 전에, 먼저 <strong>연습</strong>을 해볼게요.</p>
+      <p>아래 각 예시마다 <strong>① 실제 단어</strong>를 먼저 들려드리고, 이어서
+      <strong>② 그 단어의 리듬을 가진 지블리시</strong>를 들려드립니다. 두 소리를
+      비교하면서, "아, 이런 식으로 리듬이 비슷하구나"를 느껴보세요.</p>
+    </div>
+
+    <div id="practiceItemsContainer"></div>
+
+    <div class="practice-item" id="practiceQuestionBlock">
+      <h3>연습 문제 (점수에 반영되지 않습니다)</h3>
+      <p style="font-family:-apple-system,sans-serif; font-size:14px; margin-bottom:14px;">
+        이제 직접 풀어보세요. 소리를 듣고, 가장 비슷한 리듬의 단어를 골라보세요.
+      </p>
+      <audio controls src="society_gbrs.mp3" style="margin-bottom:16px;"></audio>
+      <div class="choices" id="practiceChoicesContainer"></div>
+      <div id="practiceFeedback" style="display:none; font-family:-apple-system,sans-serif; font-size:14px; padding:10px 12px; border-radius:4px; margin-top:4px;"></div>
+    </div>
+
+    <div class="footer-row">
+      <button class="primary" id="practiceContinueBtn">실전 시작하기</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-item">
+    <audio id="audioPlayer" controls></audio>
+    <div id="audioDiag"></div>
+    <div class="prompt">다음 소리와 리듬이 가장 비슷하게 느껴지는 단어를 고르세요</div>
+    <div class="choices" id="choicesContainer"></div>
+    <div class="footer-row">
+      <button class="primary" id="prevBtn" style="background:var(--card-bg); color:var(--accent); border:1px solid var(--line);">이전</button>
+      <button class="primary" id="nextBtn" disabled>다음</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-done">
+    <p class="summary">
+      모든 문항이 끝났습니다. 응답해 주셔서 감사합니다.<br><br>
+      아래 버튼을 누르면 결과가 자동으로 제출됩니다. 별도 이메일 앱이 필요 없습니다.
+    </p>
+    <div class="footer-row">
+      <span class="footer-note" id="downloadStatus"></span>
+      <button class="primary" id="downloadBtn">제출하기</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const ITEMS = [
+    { id: "item_27", audioFile: "item_27_regulatory.mp3", choices: ["administration", "regulatory", "university", "immediately"] },
+    { id: "item_01", audioFile: "item_01_beautiful.mp3", choices: ["beautiful", "another", "understand", "however"] },
+    { id: "item_13", audioFile: "item_13_secretary.mp3", choices: ["misunderstand", "available", "secretary", "european"] },
+    { id: "item_18", audioFile: "item_18_championship.mp3", choices: ["population", "championship", "experience", "superimposed"] },
+    { id: "item_02", audioFile: "item_02_uniform.mp3", choices: ["anymore", "japanese", "including", "uniform"] },
+    { id: "item_17", audioFile: "item_17_electronic.mp3", choices: ["available", "electronic", "secretary", "misunderstand"] },
+    { id: "item_28", audioFile: "item_28_occupational.mp3", choices: ["occupational", "sensationalize", "investigation", "organization"] },
+    { id: "item_04", audioFile: "item_04_however.mp3", choices: ["energy", "possible", "afternoon", "however"] },
+    { id: "item_24", audioFile: "item_24_organization.mp3", choices: ["respiratory", "organization", "approximately", "decriminalize"] },
+    { id: "item_07", audioFile: "item_07_hospital.mp3", choices: ["hospital", "recommend", "according", "personnel"] },
+    { id: "item_08", audioFile: "item_08_Chicago.mp3", choices: ["beautiful", "recommend", "Chicago", "personnel"] },
+    { id: "item_23", audioFile: "item_23_autonomously.mp3", choices: ["autonomously", "respiratory", "individual", "decriminalize"] },
+    { id: "item_00", audioFile: "item_00_banana.mp3", choices: ["company", "banana", "anything", "understand"] },
+    { id: "item_03", audioFile: "item_03_another.mp3", choices: ["anymore", "another", "following", "japanese"] },
+    { id: "item_20", audioFile: "item_20_university.mp3", choices: ["administration", "immediately", "regulatory", "university"] },
+  ];
+
+  let currentIndex = 0;
+  let participantId = "";
+  let selectedChoice = null;
+  const responses = {}; // keyed by item.id, so navigating back never duplicates an entry
+
+  const screenStart = document.getElementById("screen-start");
+  const screenItem = document.getElementById("screen-item");
+  const screenDone = document.getElementById("screen-done");
+  const progressTrack = document.getElementById("progressTrack");
+  const progressFill = document.getElementById("progressFill");
+  const progressLabel = document.getElementById("progressLabel");
+  const audioPlayer = document.getElementById("audioPlayer");
+  const audioDiag = document.getElementById("audioDiag");
+  const choicesContainer = document.getElementById("choicesContainer");
+  const nextBtn = document.getElementById("nextBtn");
+  const prevBtn = document.getElementById("prevBtn");
+  const startBtn = document.getElementById("startBtn");
+  const downloadBtn = document.getElementById("downloadBtn");
+  const downloadStatus = document.getElementById("downloadStatus");
+  const participantInput = document.getElementById("participantId");
+
+  // ---------------------------------------------------------------------
+  // PRACTICE SCREEN
+  // ---------------------------------------------------------------------
+  const PRACTICE_ITEMS = [
+    { word: "communication", targetFile: "communication_target.mp3", gbrsFile: "communication_gbrs.mp3",
+      syllables: ["com", "mu", "ni", "CA", "tion"], stressIndex: 3 },
+    { word: "period", targetFile: "period_target.mp3", gbrsFile: "period_gbrs.mp3",
+      syllables: ["PE", "ri", "od"], stressIndex: 0 },
+  ];
+
+  const screenPractice = document.getElementById("screen-practice");
+  const practiceItemsContainer = document.getElementById("practiceItemsContainer");
+  const practiceContinueBtn = document.getElementById("practiceContinueBtn");
+
+  // Builds a simple syllable pitch-curve SVG: one point per syllable,
+  // the stressed syllable drawn higher (and in amber) than the others,
+  // connected by straight segments so the up/down shape reads clearly
+  // at a glance.
+  function buildPitchSvg(syllables, stressIndex) {
+    const width = 680, height = 170;
+    const marginX = 60;
+    const baselineY = 135;
+    const peakY = 55;
+    const restY = 100;
+    const n = syllables.length;
+    const step = n > 1 ? (width - 2 * marginX) / (n - 1) : 0;
+
+    const points = syllables.map((syl, i) => {
+      const x = marginX + i * step;
+      const y = i === stressIndex ? peakY : restY;
+      return { x, y, syl, stressed: i === stressIndex };
+    });
+
+    const pathD = points.map((p, i) => (i === 0 ? "M" : "L") + `${p.x},${p.y}`).join(" ");
+
+    const circles = points.map(p =>
+      p.stressed
+        ? `<circle cx="${p.x}" cy="${p.y}" r="6" fill="#FAC775" stroke="#854F0B" stroke-width="0.5"/>`
+        : `<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="#6b6b6b"/>`
+    ).join("");
+
+    const labels = points.map(p =>
+      `<text x="${p.x}" y="${baselineY + 28}" text-anchor="middle" font-size="13"
+        font-weight="${p.stressed ? 700 : 400}" fill="${p.stressed ? '#854F0B' : '#6b6b6b'}"
+        font-family="-apple-system,sans-serif">${p.syl}</text>`
+    ).join("");
+
+    return `
+      <svg viewBox="0 0 ${width} ${height}" role="img" style="width:100%; height:auto; display:block;">
+        <line x1="${marginX - 20}" y1="${baselineY}" x2="${width - marginX + 20}" y2="${baselineY}"
+          stroke="#d8d4cb" stroke-width="0.5" stroke-dasharray="3 4"/>
+        <path d="${pathD}" fill="none" stroke="#BA7517" stroke-width="2"/>
+        ${circles}
+        ${labels}
+      </svg>
+    `;
+  }
+
+  PRACTICE_ITEMS.forEach((p, i) => {
+    const div = document.createElement("div");
+    div.className = "practice-item";
+    div.innerHTML = `
+      <h3>예시 ${i + 1}: ${p.word}</h3>
+      <div class="pitch-figure" style="margin-top:0;">
+        ${buildPitchSvg(p.syllables, p.stressIndex)}
+      </div>
+      <div class="practice-audio-row">
+        <label>① 실제 단어</label>
+        <audio controls src="${p.targetFile}"></audio>
+      </div>
+      <div class="practice-audio-row">
+        <label>② 같은 리듬의 지블리시</label>
+        <audio controls src="${p.gbrsFile}"></audio>
+      </div>
+    `;
+    practiceItemsContainer.appendChild(div);
+  });
+
+
+  // Practice question: styled like a real item, but not scored. Lets the
+  // participant try the click-to-answer interaction once, with immediate
+  // feedback, before the real (scored) items begin.
+  const PRACTICE_QUESTION = {
+    audioFile: "society_gbrs.mp3",
+    answer: "society",
+    choices: ["actually", "society", "information", "nevertheless"],
+  };
+
+  const practiceChoicesContainer = document.getElementById("practiceChoicesContainer");
+  const practiceFeedback = document.getElementById("practiceFeedback");
+
+  PRACTICE_QUESTION.choices.forEach(choice => {
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.type = "button";
+    btn.textContent = choice;
+    btn.addEventListener("click", () => {
+      [...practiceChoicesContainer.children].forEach(c => {
+        c.classList.remove("selected");
+        c.disabled = true;
+      });
+      btn.classList.add("selected");
+
+      const isCorrect = choice === PRACTICE_QUESTION.answer;
+      practiceFeedback.style.display = "block";
+      if (isCorrect) {
+        practiceFeedback.style.background = "#e6f4ea";
+        practiceFeedback.style.color = "#1e7a34";
+        practiceFeedback.textContent = "정답입니다! 이렇게 리듬만으로 판단하시면 됩니다.";
+      } else {
+        practiceFeedback.style.background = "#fdecea";
+        practiceFeedback.style.color = "#b3261e";
+        practiceFeedback.textContent = `아쉬워요. 정답은 "${PRACTICE_QUESTION.answer}"였습니다. 정답/오답 여부는 신경 쓰지 마시고, 이런 방식으로 답하시면 된다는 것만 기억해주세요.`;
+      }
+    });
+    practiceChoicesContainer.appendChild(btn);
+  });
+
+  practiceContinueBtn.addEventListener("click", () => {
+    currentIndex = 0;
+    showScreen(screenItem);
+    loadItem(currentIndex);
+  });
+
+
+  function showAudioDiag(msg) {
+    audioDiag.textContent = msg;
+    audioDiag.style.display = "block";
+  }
+  audioPlayer.addEventListener("error", () => {
+    const err = audioPlayer.error;
+    const codeNames = {1: "ABORTED", 2: "NETWORK", 3: "DECODE", 4: "SRC_NOT_SUPPORTED"};
+    const codeName = err ? (codeNames[err.code] || err.code) : "unknown";
+    showAudioDiag("오디오 로드 오류: " + codeName + (err && err.message ? " - " + err.message : ""));
+  });
+  audioPlayer.addEventListener("loadedmetadata", () => {
+    audioDiag.style.display = "none";
+  });
+
+  function showScreen(el) {
+    [screenStart, screenPractice, screenItem, screenDone].forEach(s => s.classList.remove("active"));
+    el.classList.add("active");
+  }
+
+  function loadItem(index) {
+    const item = ITEMS[index];
+    const previousAnswer = responses[item.id] ? responses[item.id].selected_choice : null;
+    selectedChoice = previousAnswer;
+    nextBtn.disabled = !previousAnswer;
+    nextBtn.textContent = index === ITEMS.length - 1 ? "완료" : "다음";
+    prevBtn.disabled = index === 0;
+    prevBtn.style.visibility = index === 0 ? "hidden" : "visible";
+
+    audioPlayer.src = item.audioFile;
+    audioPlayer.load();
+    audioPlayer.currentTime = 0;
+
+    choicesContainer.innerHTML = "";
+    item.choices.forEach(choice => {
+      const btn = document.createElement("button");
+      btn.className = "choice";
+      btn.type = "button";
+      btn.textContent = choice;
+      if (choice === previousAnswer) {
+        btn.classList.add("selected");
+      }
+      btn.addEventListener("click", () => {
+        selectedChoice = choice;
+        [...choicesContainer.children].forEach(c => c.classList.remove("selected"));
+        btn.classList.add("selected");
+        nextBtn.disabled = false;
+      });
+      choicesContainer.appendChild(btn);
+    });
+
+    progressTrack.style.display = "block";
+    progressLabel.style.display = "block";
+    const pct = (index / ITEMS.length) * 100;
+    progressFill.style.width = pct + "%";
+    progressLabel.textContent = `${index + 1} / ${ITEMS.length}`;
+  }
+
+  startBtn.addEventListener("click", () => {
+    participantId = participantInput.value.trim() || "anonymous";
+    showScreen(screenPractice);
+  });
+
+  nextBtn.addEventListener("click", () => {
+    const item = ITEMS[currentIndex];
+    responses[item.id] = {
+      participant_id: participantId,
+      item_id: item.id,
+      audio_file: item.audioFile,
+      selected_choice: selectedChoice,
+      timestamp: new Date().toISOString(),
+    };
+
+    currentIndex++;
+    if (currentIndex < ITEMS.length) {
+      loadItem(currentIndex);
+    } else {
+      progressFill.style.width = "100%";
+      progressLabel.textContent = `${ITEMS.length} / ${ITEMS.length}`;
+      showScreen(screenDone);
+    }
+  });
+
+  prevBtn.addEventListener("click", () => {
+    if (currentIndex === 0) return;
+    currentIndex--;
+    loadItem(currentIndex);
+  });
+
+  function buildCsv() {
+    const header = "participant_id,item_id,audio_file,selected_choice,timestamp\n";
+    const rows = ITEMS
+      .map(item => responses[item.id])
+      .filter(Boolean)
+      .map(r => [r.participant_id, r.item_id, r.audio_file, r.selected_choice, r.timestamp].join(","));
+    return header + rows.join("\n");
+  }
+
+  const FORMSPREE_ENDPOINT = "https://formspree.io/f/xnpqweqg";
+  const RESEARCHER_EMAIL = "namilnme0405@gmail.com"; // fallback only
+
+  downloadBtn.addEventListener("click", async () => {
+    const csvContent = buildCsv();
+    downloadBtn.disabled = true;
+    downloadStatus.textContent = "제출 중...";
+
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          participant_id: participantId,
+          item_set: "set2",
+          subject: `Prosody listening task results - ${participantId}`,
+          results_csv: csvContent,
+        }),
+      });
+
+      if (res.ok) {
+        downloadStatus.textContent = "제출이 완료되었습니다. 감사합니다!";
+        downloadBtn.textContent = "제출 완료";
+      } else {
+        throw new Error("Formspree responded with status " + res.status);
+      }
+    } catch (err) {
+      // Fallback: mailto + visible CSV text, in case the network request
+      // fails (offline, ad-blocker, etc.)
+      downloadStatus.textContent = "자동 제출에 실패했습니다. 아래 방법으로 보내주세요.";
+      downloadBtn.disabled = false;
+
+      const mailtoUrl =
+        "mailto:" + encodeURIComponent(RESEARCHER_EMAIL) +
+        "?subject=" + encodeURIComponent(`Prosody listening task results - ${participantId}`) +
+        "&body=" + encodeURIComponent(csvContent);
+
+      if (!document.getElementById("csvFallback")) {
+        const label = document.createElement("p");
+        label.className = "footer-note";
+        label.style.marginTop = "16px";
+        label.innerHTML = `자동 제출이 안 되면, <a href="${mailtoUrl}">이 링크</a>로 이메일을 보내시거나, 아래 내용을 복사해서 ${RESEARCHER_EMAIL} 로 보내주세요.`;
+        const pre = document.createElement("pre");
+        pre.id = "csvFallback";
+        pre.style.whiteSpace = "pre-wrap";
+        pre.style.fontSize = "11px";
+        pre.style.padding = "12px";
+        pre.style.border = "1px solid var(--line)";
+        pre.style.borderRadius = "4px";
+        pre.style.marginTop = "8px";
+        pre.style.userSelect = "all";
+        pre.textContent = csvContent;
+        screenDone.appendChild(label);
+        screenDone.appendChild(pre);
+      }
+      return;
+    }
+  });
+</script>
+</body>
+</html>
