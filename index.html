@@ -169,11 +169,11 @@
   <div class="screen" id="screen-done">
     <p class="summary">
       모든 문항이 끝났습니다. 응답해 주셔서 감사합니다.<br><br>
-      아래 버튼을 누르면 이메일 앱이 열리고 결과가 자동으로 채워집니다. "보내기"만 눌러주시면 제출이 완료됩니다.
+      아래 버튼을 누르면 결과가 자동으로 제출됩니다. 별도 이메일 앱이 필요 없습니다.
     </p>
     <div class="footer-row">
       <span class="footer-note" id="downloadStatus"></span>
-      <button class="primary" id="downloadBtn">이메일로 제출하기</button>
+      <button class="primary" id="downloadBtn">제출하기</button>
     </div>
   </div>
 
@@ -298,36 +298,61 @@
     return header + rows.join("\n");
   }
 
-  const RESEARCHER_EMAIL = "namilnme0405@gmail.com";
+  const FORMSPREE_ENDPOINT = "https://formspree.io/f/xnpqweqg";
+  const RESEARCHER_EMAIL = "namilnme0405@gmail.com"; // fallback only
 
-  downloadBtn.addEventListener("click", () => {
+  downloadBtn.addEventListener("click", async () => {
     const csvContent = buildCsv();
-    const subject = `Prosody listening task results - ${participantId}`;
-    const mailtoUrl =
-      "mailto:" + encodeURIComponent(RESEARCHER_EMAIL) +
-      "?subject=" + encodeURIComponent(subject) +
-      "&body=" + encodeURIComponent(csvContent);
+    downloadBtn.disabled = true;
+    downloadStatus.textContent = "제출 중...";
 
-    window.location.href = mailtoUrl;
-    downloadStatus.textContent = "이메일 앱이 열립니다. '보내기'를 눌러 제출을 완료해주세요.";
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          participant_id: participantId,
+          subject: `Prosody listening task results - ${participantId}`,
+          results_csv: csvContent,
+        }),
+      });
 
-    if (!document.getElementById("csvFallback")) {
-      const label = document.createElement("p");
-      label.className = "footer-note";
-      label.style.marginTop = "16px";
-      label.textContent = "이메일이 자동으로 열리지 않으면, 아래 내용을 복사해서 " + RESEARCHER_EMAIL + " 로 보내주세요.";
-      const pre = document.createElement("pre");
-      pre.id = "csvFallback";
-      pre.style.whiteSpace = "pre-wrap";
-      pre.style.fontSize = "11px";
-      pre.style.padding = "12px";
-      pre.style.border = "1px solid var(--line)";
-      pre.style.borderRadius = "4px";
-      pre.style.marginTop = "8px";
-      pre.style.userSelect = "all";
-      pre.textContent = csvContent;
-      screenDone.appendChild(label);
-      screenDone.appendChild(pre);
+      if (res.ok) {
+        downloadStatus.textContent = "제출이 완료되었습니다. 감사합니다!";
+        downloadBtn.textContent = "제출 완료";
+      } else {
+        throw new Error("Formspree responded with status " + res.status);
+      }
+    } catch (err) {
+      // Fallback: mailto + visible CSV text, in case the network request
+      // fails (offline, ad-blocker, etc.)
+      downloadStatus.textContent = "자동 제출에 실패했습니다. 아래 방법으로 보내주세요.";
+      downloadBtn.disabled = false;
+
+      const mailtoUrl =
+        "mailto:" + encodeURIComponent(RESEARCHER_EMAIL) +
+        "?subject=" + encodeURIComponent(`Prosody listening task results - ${participantId}`) +
+        "&body=" + encodeURIComponent(csvContent);
+
+      if (!document.getElementById("csvFallback")) {
+        const label = document.createElement("p");
+        label.className = "footer-note";
+        label.style.marginTop = "16px";
+        label.innerHTML = `자동 제출이 안 되면, <a href="${mailtoUrl}">이 링크</a>로 이메일을 보내시거나, 아래 내용을 복사해서 ${RESEARCHER_EMAIL} 로 보내주세요.`;
+        const pre = document.createElement("pre");
+        pre.id = "csvFallback";
+        pre.style.whiteSpace = "pre-wrap";
+        pre.style.fontSize = "11px";
+        pre.style.padding = "12px";
+        pre.style.border = "1px solid var(--line)";
+        pre.style.borderRadius = "4px";
+        pre.style.marginTop = "8px";
+        pre.style.userSelect = "all";
+        pre.textContent = csvContent;
+        screenDone.appendChild(label);
+        screenDone.appendChild(pre);
+      }
+      return;
     }
   });
 </script>
