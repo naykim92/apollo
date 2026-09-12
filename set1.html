@@ -37,7 +37,7 @@
     padding: 40px 20px;
     word-break: keep-all;
   }
-  .card { width: 100%; max-width: 560px; }
+  .card { width: 100%; max-width: 760px; }
   h1 { font-size: 22px; font-weight: 400; letter-spacing: 0.02em; margin: 0 0 4px 0; }
   .subtitle { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px; color: var(--muted); margin-bottom: 32px; }
   .progress-track { height: 2px; background: var(--line); margin-bottom: 40px; position: relative; }
@@ -394,7 +394,7 @@
     ).join("");
 
     const labels = points.map(p =>
-      `<text x="${p.x}" y="${baselineY + 50}" text-anchor="middle" font-size="${p.stressed ? 27 : 20}"
+      `<text x="${p.x}" y="${baselineY + 50}" text-anchor="middle" font-size="${p.stressed ? 33 : 28}"
         font-weight="${p.stressed ? 700 : 400}" fill="${p.stressed ? '#5B3F91' : '#6b6b6b'}"
         font-family="-apple-system,sans-serif">${p.syl}</text>`
     ).join("");
