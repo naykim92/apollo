@@ -500,12 +500,11 @@
       syllables: ["com", "mu", "ni", "CA", "tion"], stressIndex: 3 },
     { word: "period", targetFile: "period_target.mp3", gbrsFile: "period_gbrs.mp3",
       syllables: ["PE", "ri", "od"], stressIndex: 0 },
-    { word: "society", targetFile: "society_target.mp3", gbrsFile: "society_gbrs.mp3",
-      syllables: ["so", "CI", "e", "ty"], stressIndex: 1 },
   ];
 
   const practiceItemsContainer = document.getElementById("practiceItemsContainer");
-  PRACTICE_ITEMS.forEach((p, i) => {
+
+  function buildPracticeExampleCard(p, i) {
     const div = document.createElement("div");
     div.className = "practice-item";
     div.innerHTML = `
@@ -522,8 +521,15 @@
         <audio controls src="${p.gbrsFile}"></audio>
       </div>
     `;
-    practiceItemsContainer.appendChild(div);
+    return div;
+  }
+
+  const practiceExampleRow = document.createElement("div");
+  practiceExampleRow.className = "example-pair-row";
+  PRACTICE_ITEMS.forEach((p, i) => {
+    practiceExampleRow.appendChild(buildPracticeExampleCard(p, i));
   });
+  practiceItemsContainer.appendChild(practiceExampleRow);
 
 
   // Practice question: styled like a real item (drag-to-select stress,
@@ -536,6 +542,7 @@
   // field) so the letters box shows the real letters instead of a
   // placeholder.
   const PRACTICE_GIBBERISH_SPELLING = "gaseiali"; // society
+  const PRACTICE_CORRECT_SPANS = ["se", "sei"]; // acceptable stress-marking answers
 
   const PRACTICE_QUESTION = {
     audioFile: "society_gbrs.mp3",
@@ -552,8 +559,7 @@
   let practiceDragStart = null;
   let practiceDragEnd = null;
   let practiceIsDragging = false;
-  let practiceAttempt = 0;
-  let practiceLocked = false;
+  let practiceStep1Passed = false;
 
   function updatePracticeSelectionVisual() {
     if (practiceDragStart === null || practiceDragEnd === null) return;
@@ -572,7 +578,7 @@
     span.textContent = ch;
     span.dataset.index = i;
     span.addEventListener("pointerdown", (e) => {
-      if (practiceLocked) return;
+      if (practiceStep1Passed) return;
       practiceIsDragging = true;
       practiceDragStart = i;
       practiceDragEnd = i;
@@ -580,7 +586,7 @@
       e.preventDefault();
     });
     span.addEventListener("pointerenter", () => {
-      if (practiceIsDragging && !practiceLocked) {
+      if (practiceIsDragging && !practiceStep1Passed) {
         practiceDragEnd = i;
         updatePracticeSelectionVisual();
       }
@@ -591,8 +597,27 @@
   document.addEventListener("pointerup", () => {
     if (practiceIsDragging) {
       practiceIsDragging = false;
-      if (practiceDragStart !== null && practiceDragEnd !== null) {
-        practiceStep2Block.style.display = "block";
+      if (practiceDragStart !== null && practiceDragEnd !== null && !practiceStep1Passed) {
+        const lo = Math.min(practiceDragStart, practiceDragEnd);
+        const hi = Math.max(practiceDragStart, practiceDragEnd);
+        const selectedText = PRACTICE_GIBBERISH_SPELLING.slice(lo, hi + 1);
+
+        practiceFeedback.style.display = "block";
+        if (PRACTICE_CORRECT_SPANS.includes(selectedText)) {
+          practiceStep1Passed = true;
+          practiceFeedback.style.background = "#e6f4ea";
+          practiceFeedback.style.color = "#1e7a34";
+          practiceFeedback.textContent = "정답입니다! 이제 비슷한 리듬의 단어를 골라보세요.";
+          practiceStep2Block.style.display = "block";
+        } else {
+          practiceFeedback.style.background = "#fdecea";
+          practiceFeedback.style.color = "#b3261e";
+          practiceFeedback.textContent = "틀렸습니다! 다시 시도해보세요.";
+          // reset so the participant can try marking a different span
+          practiceDragStart = null;
+          practiceDragEnd = null;
+          [...practiceLettersBox.children].forEach(el => el.classList.remove("selected"));
+        }
       }
     }
   });
@@ -603,35 +628,8 @@
     btn.type = "button";
     btn.textContent = choice;
     btn.addEventListener("click", () => {
-      if (practiceLocked) return;
-
-      const isCorrect = choice === PRACTICE_QUESTION.answer;
-      practiceFeedback.style.display = "block";
-
-      if (isCorrect) {
-        [...practiceChoicesContainer.children].forEach(c => {
-          c.classList.remove("selected");
-          c.disabled = true;
-        });
-        btn.classList.add("selected");
-        practiceLocked = true;
-        practiceFeedback.style.background = "#e6f4ea";
-        practiceFeedback.style.color = "#1e7a34";
-        practiceFeedback.textContent = "정답입니다! 이렇게 리듬만으로 판단하시면 됩니다.";
-      } else {
-        practiceAttempt++;
-        if (practiceAttempt === 1) {
-          practiceFeedback.style.background = "#fff4e5";
-          practiceFeedback.style.color = "#8a5a00";
-          practiceFeedback.textContent = "다시 시도해보세요!";
-        } else {
-          [...practiceChoicesContainer.children].forEach(c => { c.disabled = true; });
-          practiceLocked = true;
-          practiceFeedback.style.background = "#fdecea";
-          practiceFeedback.style.color = "#b3261e";
-          practiceFeedback.textContent = `정답은 "${PRACTICE_QUESTION.answer}"였습니다. 정답/오답 여부는 신경 쓰지 마시고, 이런 방식으로 답하시면 된다는 것만 기억해주세요.`;
-        }
-      }
+      [...practiceChoicesContainer.children].forEach(c => c.classList.remove("selected"));
+      btn.classList.add("selected");
     });
     practiceChoicesContainer.appendChild(btn);
   });
