@@ -9,8 +9,8 @@
     --ink: #1a1a1a;
     --paper: #ffffff;
     --line: #d8d4cb;
-    --accent: #3a5a7a;
-    --accent-soft: #e8eef3;
+    --accent: #7c5cbf;
+    --accent-soft: #f1ecfa;
     --muted: #6b6b6b;
     --card-bg: #ffffff;
   }
@@ -19,8 +19,8 @@
       --ink: #ececec;
       --paper: #16181c;
       --line: #3a3d42;
-      --accent: #7fa8d0;
-      --accent-soft: #26313d;
+      --accent: #b39ddb;
+      --accent-soft: #2e2438;
       --muted: #9a9a9a;
       --card-bg: #1e2126;
     }
@@ -35,6 +35,7 @@
     justify-content: center;
     min-height: 100vh;
     padding: 40px 20px;
+    word-break: keep-all;
   }
   .card { width: 100%; max-width: 560px; }
   h1 { font-size: 22px; font-weight: 400; letter-spacing: 0.02em; margin: 0 0 4px 0; }
@@ -55,6 +56,9 @@
   .pitch-figure { margin: 20px 0; padding: 16px 12px; background: var(--card-bg); border: 1px solid var(--line); border-radius: 4px; }
   .pitch-figure svg { width: 100%; height: auto; display: block; }
   .pitch-caption { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 12px; color: var(--muted); text-align: center; margin-top: 8px; }
+  .info-box { margin: 20px 0; padding: 18px 20px; background: #ffffff; border: 0.5px solid var(--accent); border-radius: 6px; }
+  .info-box h2 { margin-top: 0; }
+  .info-box p:last-child { margin-bottom: 0; }
   audio { width: 100%; margin-bottom: 28px; }
   #audioDiag { display:none; font-family:-apple-system,sans-serif; font-size:12px; color:#b3261e; background:#fdecea; border:1px solid #f5c2c0; border-radius:4px; padding:10px 12px; margin:-16px 0 20px 0; }
   .prompt { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 15px; margin-bottom: 20px; }
@@ -96,6 +100,15 @@
     margin-bottom: 0;
     width: 100%;
   }
+
+.step-label { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 12px; color: var(--accent); font-weight: 700; letter-spacing: 0.04em; margin-bottom: 8px; }
+.step-instruction { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
+.letters-box { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px; padding: 24px 10px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 10px; background: var(--card-bg); user-select: none; -webkit-user-select: none; touch-action: none; }
+.letter { font-size: 28px; font-weight: 500; width: 38px; height: 52px; display: flex; align-items: center; justify-content: center; border-radius: 6px; background: #fafafa; border: 1px solid var(--line); cursor: pointer; transition: background 0.1s ease, border-color 0.1s ease; }
+.letter.selected { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+.selection-readout { font-family: -apple-system, BlinkMacSystemFont, sans-serif; text-align: center; font-size: 13px; color: var(--muted); margin-bottom: 20px; min-height: 18px; }
+.selection-readout strong { color: var(--accent); }
+.step2-block { margin-top: 24px; }
 </style>
 </head>
 <body>
@@ -111,68 +124,34 @@
 
   <div class="screen active" id="screen-start">
     <div class="instructions">
-      <p>상상해 보세요. 모국어 외에 당신이 조금이라도 접해본 외국어를 떠올려 보세요.
-      우리는 그 언어를 원어민 수준으로 알지 못하더라도, 몇 번 듣고 익숙해지면
-      "아, 이거 프랑스어 같다" 혹은 "이건 일본어처럼 들린다"고 곧잘 유추해냅니다.
-      단어 뜻을 하나도 몰라도 말이죠.</p>
-      <p>이게 가능한 이유는, 각 언어가 고유의 <strong>prosody</strong>(운율)를 갖고 있기 때문입니다.</p>
-      <p>이건 언어 전체에만 해당하는 얘기가 아닙니다. 우리가 매일 말하는 수많은 단어와
-      표현 하나하나도 저마다 고유한 운율을 갖고 있어요. 예를 들어 아래 그림을 보시면,
-      "banana"는 가운데 음절(<strong>NA</strong>)에서 소리가 높아지고, "immediately"는
-      두 번째 음절(<strong>ME</strong>)에서 강세가 실리며 이후로는 점차 낮아지는 흐름을
-      보입니다. 이렇게 각 단어는 고유의 강세, 리듬, 휴지의 패턴을 갖고 있고, 우리는
-      이걸 <strong>prosody</strong>라고 부릅니다.</p>
+      <p>사람이 언어를 습득하고 의사소통에 활용하는 데 있어, 소리는 중요한 역할을 합니다.
+      특히 특정한 단어에 나타난 강세나 책을 읽을 때의 리듬, 높낮이 등을 따로 배우지 않아도
+      우리는 그것을 자연스럽게 활용할 수 있습니다. 이러한 <strong>강세, 리듬, 높낮이</strong> 등을
+      <strong>운율(prosody)</strong>이라고 하며, 이러한 운율을 이해하고 활용하는 것을 "<strong>운율 감각</strong>"이라고 합니다.
+      여기서는 여러분의 운율 감각을 살피기 위해 "<u><strong>단어 음절 유추 실험</strong></u>"을 진행할 예정입니다.
+      먼저 아래에 제시된 오디오의 음성을 들어보세요. (▶︎ 버튼 누르기)</p>
 
-      <div class="pitch-figure">
-        <svg viewBox="0 0 680 400" role="img" aria-label="banana와 immediately의 피치 곡선 예시">
-          <title>banana와 immediately의 피치 곡선 예시</title>
-          <desc>각 단어의 음절별 높낮이를 곡선으로 표현하고, 강세 음절을 강조 표시한 그림</desc>
-          <line x1="80" y1="155" x2="600" y2="155" stroke="#d8d4cb" stroke-width="0.5" stroke-dasharray="3 4"/>
-          <path d="M140,140 Q220,80 300,90 Q380,100 460,115" fill="none" stroke="#BA7517" stroke-width="2"/>
-          <circle cx="140" cy="140" r="3.5" fill="#6b6b6b"/>
-          <circle cx="460" cy="115" r="3.5" fill="#6b6b6b"/>
-          <circle cx="300" cy="90" r="6" fill="#FAC775" stroke="#854F0B" stroke-width="0.5"/>
-          <text x="140" y="175" text-anchor="middle" font-size="14" fill="#6b6b6b" font-family="-apple-system,sans-serif">ba</text>
-          <text x="300" y="175" text-anchor="middle" font-size="14" font-weight="700" fill="#854F0B" font-family="-apple-system,sans-serif">NA</text>
-          <text x="460" y="175" text-anchor="middle" font-size="14" fill="#6b6b6b" font-family="-apple-system,sans-serif">na</text>
-          <text x="80" y="30" font-size="14" fill="#1a1a1a" font-family="-apple-system,sans-serif">banana</text>
-          <line x1="60" y1="355" x2="620" y2="355" stroke="#d8d4cb" stroke-width="0.5" stroke-dasharray="3 4"/>
-          <path d="M100,340 Q160,300 220,285 Q280,300 340,318 Q400,328 460,335 Q520,340 580,345" fill="none" stroke="#BA7517" stroke-width="2"/>
-          <circle cx="100" cy="340" r="3.5" fill="#6b6b6b"/>
-          <circle cx="340" cy="318" r="3.5" fill="#6b6b6b"/>
-          <circle cx="460" cy="335" r="3.5" fill="#6b6b6b"/>
-          <circle cx="580" cy="345" r="3.5" fill="#6b6b6b"/>
-          <circle cx="220" cy="285" r="6" fill="#FAC775" stroke="#854F0B" stroke-width="0.5"/>
-          <text x="100" y="372" text-anchor="middle" font-size="14" fill="#6b6b6b" font-family="-apple-system,sans-serif">im</text>
-          <text x="220" y="372" text-anchor="middle" font-size="14" font-weight="700" fill="#854F0B" font-family="-apple-system,sans-serif">ME</text>
-          <text x="340" y="372" text-anchor="middle" font-size="14" fill="#6b6b6b" font-family="-apple-system,sans-serif">di</text>
-          <text x="460" y="372" text-anchor="middle" font-size="14" fill="#6b6b6b" font-family="-apple-system,sans-serif">ate</text>
-          <text x="580" y="372" text-anchor="middle" font-size="14" fill="#6b6b6b" font-family="-apple-system,sans-serif">ly</text>
-          <text x="60" y="230" font-size="14" fill="#1a1a1a" font-family="-apple-system,sans-serif">immediately</text>
-        </svg>
-        <div class="pitch-caption">단어별 음절 높낮이 예시 (강조된 음절이 강세 위치)</div>
-      </div>
+      <div id="introExamplesContainer"></div>
+
+      <p>이렇게 <strong>실제로 아는 단어가 아니어도</strong>, 순전히 강세와 리듬의
+      패턴만으로 "이건 어떤 단어와 닮았다"고 판단할 수 있는 능력을, 조금 어려운
+      말로는 <strong>추상적 운율 지식</strong>이라고 부릅니다.</p>
 
       <h2>이 실험이 측정하는 것</h2>
-      <p>이번 태스크는 당신이 이러한 prosody에 대한 지식, 즉
-      <strong>prosodic knowledge</strong>를 얼마나 갖고 있는지를 알아보는 실험입니다.</p>
-      <p>구체적으로는, 실제로 존재하지 않는 무의미한 소리(지블리시, gibberish)를
-      들려드릴 거예요. 이 소리들은 철자와 발음은 실제 영어 단어와 다르지만,
-      <strong>강세와 리듬만큼은 특정 영어 단어의 것을 그대로 가져와</strong> 만들어졌습니다.
-      예를 들어 "banana"의 강세 패턴(약-강-약)을 그대로 가진 채 완전히 다른 소리로
-      읽은 것이 하나의 문항이 됩니다.</p>
-      <p>당신이 할 일은 간단합니다. <strong>소리를 듣고, 그 소리의 리듬이 어떤 실제
-      단어와 가장 비슷하게 느껴지는지 고르는 것</strong>입니다. 단어의 뜻을 몰라도,
-      심지어 그 소리가 무엇인지 전혀 감이 안 잡혀도 괜찮습니다. 우리가 보고 싶은 건
-      여러분이 정답을 논리적으로 추론해내는 능력이 아니라, 순간적으로 느껴지는
-      리듬의 유사성이니까요.</p>
+      <p>이번 실험은 바로 이 능력, 즉 <strong>단어 안의 강세 패턴을 얼마나 잘
+      알아채는지</strong>를 테스트합니다.</p>
+      <p>방법은 간단합니다. <strong>소리를 들으시고, 선택지에 있는 단어들의 소리를
+      머릿속으로 하나씩 떠올려 보면서, 방금 들은 소리와 가장 비슷한 리듬을 가진
+      단어를 고르시면 됩니다.</strong> 단어의 뜻을 몰라도, 그 소리가 무엇인지 전혀
+      감이 안 잡혀도 괜찮습니다.</p>
 
-      <h2>참고해 주세요</h2>
+      <h2>참고해 주세요!</h2>
       <ul>
-        <li>이건 영어 실력을 테스트하는 시험이 아닙니다.</li>
-        <li>헷갈리거나 확신이 안 서도 괜찮습니다. 첫 느낌, 직관을 따라 골라 주세요.</li>
-        <li>조용한 환경에서 헤드폰이나 이어폰을 착용하고 들어주시면 좋습니다.</li>
-        <li>각 문항은 여러 번 들으셔도 됩니다.</li>
+        <li>이건 영어 실력을 테스트하는 시험이 아닙니다. 각 단어가 가지고 있는
+        고유의 강세 패턴에 대한 추상화 능력을 평가하는 것입니다.</li>
+        <li>소리는 다시 들으셔도 좋지만, 너무 오래 고민하지는 마세요. 첫 느낌을
+        따라 골라 주세요.</li>
+        <li>조용한 환경에서 집중해서 진행해 주세요.</li>
       </ul>
     </div>
 
@@ -186,25 +165,38 @@
   <!-- Screen: practice -->
   <div class="screen" id="screen-practice">
     <div class="instructions">
-      <p>본 문제를 풀기 전에, 먼저 <strong>연습</strong>을 해볼게요.</p>
-      <p>아래 각 예시마다 <strong>① 실제 단어</strong>를 먼저 들려드리고, 이어서
-      <strong>② 그 단어의 리듬을 가진 지블리시</strong>를 들려드립니다. 두 소리를
-      비교하면서, "아, 이런 식으로 리듬이 비슷하구나"를 느껴보세요.</p>
+      <p>본격적으로 시작하기 전에, 몇 가지 예시를 더 들어보겠습니다. 각 예시마다
+      <strong>① 실제 단어</strong>를 먼저 들려드리고, 이어서
+      <strong>② 그 단어의 리듬을 가진 지블리시</strong>를 들려드립니다.</p>
     </div>
 
     <div id="practiceItemsContainer"></div>
 
+    <div class="instructions">
+      <p>그럼 이제 연습 문제를 풀어볼까요? 이 문제는 <strong>점수에 반영되지
+      않습니다.</strong></p>
+    </div>
+
     <div class="practice-item" id="practiceQuestionBlock">
       <h3>연습 문제 (점수에 반영되지 않습니다)</h3>
       <p style="font-family:-apple-system,sans-serif; font-size:14px; margin-bottom:14px;">
-        이제 직접 풀어보세요. 소리를 듣고, 가장 비슷한 리듬의 단어를 골라보세요.
+        이제 직접 풀어보세요. 소리를 듣고 강세가 있다고 느껴지는 글자를 드래그로 표시한 뒤,
+        가장 비슷한 리듬의 단어를 골라보세요.
       </p>
       <audio controls src="society_gbrs.mp3" style="margin-bottom:16px;"></audio>
-      <div class="choices" id="practiceChoicesContainer"></div>
+
+      <div class="letters-box" id="practiceLettersBox"></div>
+      <div class="selection-readout" id="practiceSelectionReadout">글자를 드래그해서 강세 위치를 표시해 주세요</div>
+
+      <div class="step2-block" id="practiceStep2Block" style="display:none;">
+        <div class="choices" id="practiceChoicesContainer"></div>
+      </div>
+
       <div id="practiceFeedback" style="display:none; font-family:-apple-system,sans-serif; font-size:14px; padding:10px 12px; border-radius:4px; margin-top:4px;"></div>
     </div>
 
     <div class="footer-row">
+      <button class="primary" id="practiceBackBtn" style="background:var(--card-bg); color:var(--accent); border:1px solid var(--line);">이전</button>
       <button class="primary" id="practiceContinueBtn">실전 시작하기</button>
     </div>
   </div>
@@ -212,8 +204,23 @@
   <div class="screen" id="screen-item">
     <audio id="audioPlayer" controls></audio>
     <div id="audioDiag"></div>
-    <div class="prompt">다음 소리와 리듬이 가장 비슷하게 느껴지는 단어를 고르세요</div>
-    <div class="choices" id="choicesContainer"></div>
+
+    <div class="step-label">STEP 1</div>
+    <div class="step-instruction">
+      소리를 듣고, 아래 철자에서 <strong>강세가 있다고 느껴지는 글자를 드래그</strong>해서
+      표시해 주세요.
+    </div>
+    <div class="letters-box" id="lettersBox"></div>
+    <div class="selection-readout" id="selectionReadout">글자를 드래그해서 강세 위치를 표시해 주세요</div>
+
+    <div class="step2-block" id="step2Block" style="display:none;">
+      <div class="step-label">STEP 2</div>
+      <div class="step-instruction">
+        방금 표시하신 강세 위치를 떠올리며, 소리와 가장 리듬이 비슷한 단어를 골라주세요.
+      </div>
+      <div class="choices" id="choicesContainer"></div>
+    </div>
+
     <div class="footer-row">
       <button class="primary" id="prevBtn" style="background:var(--card-bg); color:var(--accent); border:1px solid var(--line);">이전</button>
       <button class="primary" id="nextBtn" disabled>다음</button>
@@ -235,21 +242,21 @@
 
 <script>
   const ITEMS = [
-    { id: "item_19", audioFile: "item_19_influences.mp3", choices: ["security", "influences", "senegalese", "absolutely"] },
-    { id: "item_14", audioFile: "item_14_relationship.mp3", choices: ["relationship", "misunderstand", "secretary", "european"] },
-    { id: "item_10", audioFile: "item_10_competition.mp3", choices: ["development", "definitely", "competition", "nevertheless"] },
-    { id: "item_26", audioFile: "item_26_electricity.mp3", choices: ["decriminalize", "respiratory", "electricity", "approximately"] },
-    { id: "item_22", audioFile: "item_22_immediately.mp3", choices: ["university", "regulatory", "administration", "immediately"] },
-    { id: "item_06", audioFile: "item_06_understand.mp3", choices: ["company", "understand", "another", "however"] },
-    { id: "item_05", audioFile: "item_05_anything.mp3", choices: ["anything", "important", "afternoon", "together"] },
-    { id: "item_12", audioFile: "item_12_development.mp3", choices: ["development", "definitely", "nevertheless", "situation"] },
-    { id: "item_11", audioFile: "item_11_definitely.mp3", choices: ["situation", "definitely", "nevertheless", "development"] },
-    { id: "item_15", audioFile: "item_15_unpopular.mp3", choices: ["superimposed", "seriously", "population", "unpopular"] },
-    { id: "item_09", audioFile: "item_09_workmanlike.mp3", choices: ["example", "guarantee", "department", "workmanlike"] },
-    { id: "item_25", audioFile: "item_25_administrative.mp3", choices: ["sensationalize", "administrative", "organization", "opportunity"] },
-    { id: "item_29", audioFile: "item_29_acceleration.mp3", choices: ["opportunity", "sensationalize", "acceleration", "individual"] },
-    { id: "item_21", audioFile: "item_21_administration.mp3", choices: ["regulatory", "immediately", "university", "administration"] },
-    { id: "item_16", audioFile: "item_16_engineering.mp3", choices: ["development", "engineering", "available", "nevertheless"] },
+    { id: "item_19", audioFile: "item_19_influences.mp3", gibberish: "arflaozviz", choices: ["security", "influences", "senegalese", "absolutely"] },
+    { id: "item_14", audioFile: "item_14_relationship.mp3", gibberish: "cupeilufzuk", choices: ["relationship", "misunderstand", "secretary", "european"] },
+    { id: "item_10", audioFile: "item_10_competition.mp3", gibberish: "kijhudemut", choices: ["development", "definitely", "competition", "nevertheless"] },
+    { id: "item_26", audioFile: "item_26_electricity.mp3", gibberish: "ojubcrijura", choices: ["decriminalize", "respiratory", "electricity", "approximately"] },
+    { id: "item_22", audioFile: "item_22_immediately.mp3", gibberish: "alitoanhee", choices: ["university", "regulatory", "administration", "immediately"] },
+    { id: "item_06", audioFile: "item_06_understand.mp3", gibberish: "ebkistot", choices: ["company", "understand", "another", "however"] },
+    { id: "item_05", audioFile: "item_05_anything.mp3", gibberish: "ukodag", choices: ["anything", "important", "afternoon", "together"] },
+    { id: "item_12", audioFile: "item_12_development.mp3", gibberish: "gudubanhumd", choices: ["development", "definitely", "nevertheless", "situation"] },
+    { id: "item_11", audioFile: "item_11_definitely.mp3", gibberish: "kizagamti", choices: ["situation", "definitely", "nevertheless", "development"] },
+    { id: "item_15", audioFile: "item_15_unpopular.mp3", gibberish: "emdapyeki", choices: ["superimposed", "seriously", "population", "unpopular"] },
+    { id: "item_09", audioFile: "item_09_workmanlike.mp3", gibberish: "zibsanvoig", choices: ["example", "guarantee", "department", "workmanlike"] },
+    { id: "item_25", audioFile: "item_25_administrative.mp3", gibberish: "iknaqastroubog", choices: ["sensationalize", "administrative", "organization", "opportunity"] },
+    { id: "item_29", audioFile: "item_29_acceleration.mp3", gibberish: "etmunugauvep", choices: ["opportunity", "sensationalize", "acceleration", "individual"] },
+    { id: "item_21", audioFile: "item_21_administration.mp3", gibberish: "ernoleskvoisom", choices: ["regulatory", "immediately", "university", "administration"] },
+    { id: "item_16", audioFile: "item_16_engineering.mp3", gibberish: "udcavokob", choices: ["development", "engineering", "available", "nevertheless"] },
   ];
 
   let currentIndex = 0;
@@ -266,6 +273,9 @@
   const audioPlayer = document.getElementById("audioPlayer");
   const audioDiag = document.getElementById("audioDiag");
   const choicesContainer = document.getElementById("choicesContainer");
+  const lettersBox = document.getElementById("lettersBox");
+  const selectionReadout = document.getElementById("selectionReadout");
+  const step2Block = document.getElementById("step2Block");
   const nextBtn = document.getElementById("nextBtn");
   const prevBtn = document.getElementById("prevBtn");
   const startBtn = document.getElementById("startBtn");
@@ -273,26 +283,89 @@
   const downloadStatus = document.getElementById("downloadStatus");
   const participantInput = document.getElementById("participantId");
 
-  // ---------------------------------------------------------------------
-  // PRACTICE SCREEN
-  // ---------------------------------------------------------------------
-  const PRACTICE_ITEMS = [
-    { word: "communication", targetFile: "communication_target.mp3", gbrsFile: "communication_gbrs.mp3",
-      syllables: ["com", "mu", "ni", "CA", "tion"], stressIndex: 3 },
-    { word: "period", targetFile: "period_target.mp3", gbrsFile: "period_gbrs.mp3",
-      syllables: ["PE", "ri", "od"], stressIndex: 0 },
-  ];
 
-  const screenPractice = document.getElementById("screen-practice");
-  const practiceItemsContainer = document.getElementById("practiceItemsContainer");
-  const practiceContinueBtn = document.getElementById("practiceContinueBtn");
+  // ---------------------------------------------------------------------
+  // STEP 1: drag-to-select stress letters (per-item gibberish spelling)
+  // ---------------------------------------------------------------------
+  let currentGibberish = "";
+  let dragStart = null;
+  let dragEnd = null;
+  let isDragging = false;
 
+  function buildLettersBox(spelling, restoreLo, restoreHi) {
+    currentGibberish = spelling;
+    lettersBox.innerHTML = "";
+    dragStart = restoreLo !== undefined && restoreLo !== null ? restoreLo : null;
+    dragEnd = restoreHi !== undefined && restoreHi !== null ? restoreHi : null;
+
+    spelling.split("").forEach((ch, i) => {
+      const span = document.createElement("div");
+      span.className = "letter";
+      span.textContent = ch;
+      span.dataset.index = i;
+
+      span.addEventListener("pointerdown", (e) => {
+        isDragging = true;
+        dragStart = i;
+        dragEnd = i;
+        updateSelectionVisual();
+        e.preventDefault();
+      });
+      span.addEventListener("pointerenter", () => {
+        if (isDragging) {
+          dragEnd = i;
+          updateSelectionVisual();
+        }
+      });
+      lettersBox.appendChild(span);
+    });
+
+    if (dragStart !== null && dragEnd !== null) {
+      updateSelectionVisual();
+    } else {
+      selectionReadout.textContent = "글자를 드래그해서 강세 위치를 표시해 주세요";
+    }
+  }
+
+  document.addEventListener("pointerup", () => {
+    if (isDragging) {
+      isDragging = false;
+      // STEP 1 is considered complete as soon as a valid drag selection
+      // exists; STEP 2 opens immediately without a separate button.
+      if (dragStart !== null && dragEnd !== null) {
+        step2Block.style.display = "block";
+      }
+    }
+    updateNextButtonState();
+  });
+
+
+  function updateNextButtonState() {
+    const hasStress = dragStart !== null && dragEnd !== null;
+    const hasChoice = !!selectedChoice;
+    nextBtn.disabled = !(hasStress && hasChoice);
+  }
+
+  function updateSelectionVisual() {
+    if (dragStart === null || dragEnd === null) return;
+    const lo = Math.min(dragStart, dragEnd);
+    const hi = Math.max(dragStart, dragEnd);
+    [...lettersBox.children].forEach((el, i) => {
+      el.classList.toggle("selected", i >= lo && i <= hi);
+    });
+    const selectedText = currentGibberish.slice(lo, hi + 1);
+    selectionReadout.innerHTML = `선택한 강세 구간: <strong>"${selectedText}"</strong> (${lo + 1}~${hi + 1}번째 글자)`;
+  }
+
+
+  // ---------------------------------------------------------------------
   // Builds a simple syllable pitch-curve SVG: one point per syllable,
   // the stressed syllable drawn higher (and in amber) than the others,
   // connected by straight segments so the up/down shape reads clearly
   // at a glance.
+  // ---------------------------------------------------------------------
   function buildPitchSvg(syllables, stressIndex) {
-    const width = 680, height = 170;
+    const width = 680, height = 200;
     const marginX = 60;
     const baselineY = 135;
     const peakY = 55;
@@ -310,27 +383,112 @@
 
     const circles = points.map(p =>
       p.stressed
-        ? `<circle cx="${p.x}" cy="${p.y}" r="6" fill="#FAC775" stroke="#854F0B" stroke-width="0.5"/>`
+        ? `<circle cx="${p.x}" cy="${p.y}" r="6" fill="#D9C8F0" stroke="#5B3F91" stroke-width="0.5"/>`
         : `<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="#6b6b6b"/>`
     ).join("");
 
     const labels = points.map(p =>
-      `<text x="${p.x}" y="${baselineY + 28}" text-anchor="middle" font-size="13"
-        font-weight="${p.stressed ? 700 : 400}" fill="${p.stressed ? '#854F0B' : '#6b6b6b'}"
+      `<text x="${p.x}" y="${baselineY + 50}" text-anchor="middle" font-size="${p.stressed ? 27 : 20}"
+        font-weight="${p.stressed ? 700 : 400}" fill="${p.stressed ? '#5B3F91' : '#6b6b6b'}"
         font-family="-apple-system,sans-serif">${p.syl}</text>`
     ).join("");
 
     return `
-      <svg viewBox="0 0 ${width} ${height}" role="img" style="width:100%; height:auto; display:block;">
-        <line x1="${marginX - 20}" y1="${baselineY}" x2="${width - marginX + 20}" y2="${baselineY}"
-          stroke="#d8d4cb" stroke-width="0.5" stroke-dasharray="3 4"/>
-        <path d="${pathD}" fill="none" stroke="#BA7517" stroke-width="2"/>
-        ${circles}
-        ${labels}
-      </svg>
-    `;
+    <svg viewBox="0 0 ${width} ${height}" role="img" style="width:100%; height:auto; display:block;">
+      <line x1="${marginX - 20}" y1="${baselineY}" x2="${width - marginX + 20}" y2="${baselineY}"
+      stroke="#d8d4cb" stroke-width="0.5" stroke-dasharray="3 4"/>
+      <path d="${pathD}" fill="none" stroke="#8B6FB3" stroke-width="2"/>
+      ${circles}
+      ${labels}
+    </svg>
+  `;
   }
 
+  // ---------------------------------------------------------------------
+  // INTRO EXAMPLES (in screen-start): two real words with the same
+  // syllable count but different stress positions, followed by two novel
+  // gibberish words -- same letters, only the stress position differs --
+  // each matching one of the two real words' stress patterns. Audio
+  // files are added by the researcher separately; filenames are fixed
+  // here:
+  //   immediately_target.mp3, university_target.mp3,
+  //   kanubabisho_nu.mp3 (stress on "NU", matches immediately),
+  //   kanubabisho_ba.mp3 (stress on "BA", matches university)
+  // ---------------------------------------------------------------------
+  const INTRO_EXAMPLES = [
+    { label: "단어 1", word: "immediately", audioFile: "immediately_target.mp3",
+      syllables: ["im", "ME", "di", "ate", "ly"], stressIndex: 1, kind: "real" },
+    { label: "단어 2", word: "university", audioFile: "university_target.mp3",
+      syllables: ["u", "ni", "VER", "si", "ty"], stressIndex: 2, kind: "real" },
+    { label: "새로운 소리 1", word: "kaNUbabisho", audioFile: "kanubabisho_nu.mp3",
+      syllables: ["ka", "NU", "ba", "bi", "sho"], stressIndex: 1, kind: "gibberish" },
+    { label: "새로운 소리 2", word: "kanuBAbisho", audioFile: "kanubabisho_ba.mp3",
+      syllables: ["ka", "nu", "BA", "bi", "sho"], stressIndex: 2, kind: "gibberish" },
+  ];
+
+  const introExamplesContainer = document.getElementById("introExamplesContainer");
+
+  function renderIntroExample(ex) {
+    const div = document.createElement("div");
+    div.className = "practice-item";
+    const kindNote = ex.kind === "gibberish"
+      ? `<p style="font-family:-apple-system,sans-serif; font-size:13px; color:var(--muted); margin:4px 0 10px 0;">
+           (실제로는 존재하지 않는 소리입니다. 강세 위치를 비교해 보세요.)
+         </p>`
+      : "";
+    div.innerHTML = `
+      <h3>${ex.label}: ${ex.word}</h3>
+      <div class="pitch-figure" style="margin-top:0;">
+        ${buildPitchSvg(ex.syllables, ex.stressIndex)}
+      </div>
+      ${kindNote}
+      <audio controls src="${ex.audioFile}"></audio>
+    `;
+    introExamplesContainer.appendChild(div);
+  }
+
+  // Real-word examples first ...
+  INTRO_EXAMPLES.filter(ex => ex.kind === "real").forEach(renderIntroExample);
+
+  // ... then a transition explaining what's about to be compared ...
+  const gibberishIntro = document.createElement("p");
+  gibberishIntro.style.margin = "4px 0 18px 0";
+  gibberishIntro.style.fontSize = "15px";
+  gibberishIntro.style.lineHeight = "1.7";
+  gibberishIntro.innerHTML =
+    `이번에는 실제로 존재하지 않는 새로운 소리를 두 개 들려드리겠습니다. 두 소리는
+     철자가 거의 똑같고, 오직 <strong>강세 위치</strong>만 다릅니다. 어느 쪽이
+     immediately와 리듬이 같고, 어느 쪽이 university와 리듬이 같은지 한번
+     맞혀보세요.`;
+  introExamplesContainer.appendChild(gibberishIntro);
+
+  // ... then the two gibberish examples.
+  INTRO_EXAMPLES.filter(ex => ex.kind === "gibberish").forEach(renderIntroExample);
+
+  // ---------------------------------------------------------------------
+  // PRACTICE SCREEN
+  // ---------------------------------------------------------------------
+  const screenPractice = document.getElementById("screen-practice");
+  const practiceContinueBtn = document.getElementById("practiceContinueBtn");
+  const practiceBackBtn = document.getElementById("practiceBackBtn");
+
+  practiceBackBtn.addEventListener("click", () => {
+    showScreen(screenStart);
+  });
+
+  // Listening examples shown before the practice question: each pair
+  // plays the real word, then the gibberish built from the same word's
+  // stress pattern.
+  const PRACTICE_ITEMS = [
+    { word: "communication", targetFile: "communication_target.mp3", gbrsFile: "communication_gbrs.mp3",
+      syllables: ["com", "mu", "ni", "CA", "tion"], stressIndex: 3 },
+    { word: "period", targetFile: "period_target.mp3", gbrsFile: "period_gbrs.mp3",
+      syllables: ["PE", "ri", "od"], stressIndex: 0 },
+    { word: "society", targetFile: "society_target.mp3", gbrsFile: "society_gbrs.mp3",
+      syllables: ["so", "CI", "e", "ty"], stressIndex: 1 },
+  ];
+
+  const practiceItemsContainer = document.getElementById("practiceItemsContainer");
   PRACTICE_ITEMS.forEach((p, i) => {
     const div = document.createElement("div");
     div.className = "practice-item";
@@ -352,17 +510,76 @@
   });
 
 
-  // Practice question: styled like a real item, but not scored. Lets the
-  // participant try the click-to-answer interaction once, with immediate
-  // feedback, before the real (scored) items begin.
+  // Practice question: styled like a real item (drag-to-select stress,
+  // then choose), but not scored, and with a two-strike retry: a first
+  // wrong answer prompts another try; a second wrong answer reveals the
+  // correct one.
+  //
+  // TODO: replace this with the actual gibberish spelling recorded for
+  // society_gbrs.mp3 (same convention as the real items' `gibberish`
+  // field) so the letters box shows the real letters instead of a
+  // placeholder.
+  const PRACTICE_GIBBERISH_SPELLING = "gaseiali"; // society
+
   const PRACTICE_QUESTION = {
     audioFile: "society_gbrs.mp3",
     answer: "society",
-    choices: ["actually", "society", "information", "nevertheless"],
+    choices: ["variety", "society", "community", "activity"],
   };
 
+  const practiceLettersBox = document.getElementById("practiceLettersBox");
+  const practiceSelectionReadout = document.getElementById("practiceSelectionReadout");
+  const practiceStep2Block = document.getElementById("practiceStep2Block");
   const practiceChoicesContainer = document.getElementById("practiceChoicesContainer");
   const practiceFeedback = document.getElementById("practiceFeedback");
+
+  let practiceDragStart = null;
+  let practiceDragEnd = null;
+  let practiceIsDragging = false;
+  let practiceAttempt = 0;
+  let practiceLocked = false;
+
+  function updatePracticeSelectionVisual() {
+    if (practiceDragStart === null || practiceDragEnd === null) return;
+    const lo = Math.min(practiceDragStart, practiceDragEnd);
+    const hi = Math.max(practiceDragStart, practiceDragEnd);
+    [...practiceLettersBox.children].forEach((el, i) => {
+      el.classList.toggle("selected", i >= lo && i <= hi);
+    });
+    const selectedText = PRACTICE_GIBBERISH_SPELLING.slice(lo, hi + 1);
+    practiceSelectionReadout.innerHTML = `선택한 강세 구간: <strong>"${selectedText}"</strong> (${lo + 1}~${hi + 1}번째 글자)`;
+  }
+
+  PRACTICE_GIBBERISH_SPELLING.split("").forEach((ch, i) => {
+    const span = document.createElement("div");
+    span.className = "letter";
+    span.textContent = ch;
+    span.dataset.index = i;
+    span.addEventListener("pointerdown", (e) => {
+      if (practiceLocked) return;
+      practiceIsDragging = true;
+      practiceDragStart = i;
+      practiceDragEnd = i;
+      updatePracticeSelectionVisual();
+      e.preventDefault();
+    });
+    span.addEventListener("pointerenter", () => {
+      if (practiceIsDragging && !practiceLocked) {
+        practiceDragEnd = i;
+        updatePracticeSelectionVisual();
+      }
+    });
+    practiceLettersBox.appendChild(span);
+  });
+
+  document.addEventListener("pointerup", () => {
+    if (practiceIsDragging) {
+      practiceIsDragging = false;
+      if (practiceDragStart !== null && practiceDragEnd !== null) {
+        practiceStep2Block.style.display = "block";
+      }
+    }
+  });
 
   PRACTICE_QUESTION.choices.forEach(choice => {
     const btn = document.createElement("button");
@@ -370,22 +587,34 @@
     btn.type = "button";
     btn.textContent = choice;
     btn.addEventListener("click", () => {
-      [...practiceChoicesContainer.children].forEach(c => {
-        c.classList.remove("selected");
-        c.disabled = true;
-      });
-      btn.classList.add("selected");
+      if (practiceLocked) return;
 
       const isCorrect = choice === PRACTICE_QUESTION.answer;
       practiceFeedback.style.display = "block";
+
       if (isCorrect) {
+        [...practiceChoicesContainer.children].forEach(c => {
+          c.classList.remove("selected");
+          c.disabled = true;
+        });
+        btn.classList.add("selected");
+        practiceLocked = true;
         practiceFeedback.style.background = "#e6f4ea";
         practiceFeedback.style.color = "#1e7a34";
         practiceFeedback.textContent = "정답입니다! 이렇게 리듬만으로 판단하시면 됩니다.";
       } else {
-        practiceFeedback.style.background = "#fdecea";
-        practiceFeedback.style.color = "#b3261e";
-        practiceFeedback.textContent = `아쉬워요. 정답은 "${PRACTICE_QUESTION.answer}"였습니다. 정답/오답 여부는 신경 쓰지 마시고, 이런 방식으로 답하시면 된다는 것만 기억해주세요.`;
+        practiceAttempt++;
+        if (practiceAttempt === 1) {
+          practiceFeedback.style.background = "#fff4e5";
+          practiceFeedback.style.color = "#8a5a00";
+          practiceFeedback.textContent = "다시 시도해보세요!";
+        } else {
+          [...practiceChoicesContainer.children].forEach(c => { c.disabled = true; });
+          practiceLocked = true;
+          practiceFeedback.style.background = "#fdecea";
+          practiceFeedback.style.color = "#b3261e";
+          practiceFeedback.textContent = `정답은 "${PRACTICE_QUESTION.answer}"였습니다. 정답/오답 여부는 신경 쓰지 마시고, 이런 방식으로 답하시면 된다는 것만 기억해주세요.`;
+        }
       }
     });
     practiceChoicesContainer.appendChild(btn);
@@ -419,16 +648,26 @@
 
   function loadItem(index) {
     const item = ITEMS[index];
-    const previousAnswer = responses[item.id] ? responses[item.id].selected_choice : null;
+    const previous = responses[item.id] || null;
+    const previousAnswer = previous ? previous.selected_choice : null;
     selectedChoice = previousAnswer;
-    nextBtn.disabled = !previousAnswer;
     nextBtn.textContent = index === ITEMS.length - 1 ? "완료" : "다음";
-    prevBtn.disabled = index === 0;
-    prevBtn.style.visibility = index === 0 ? "hidden" : "visible";
+    prevBtn.disabled = false;
+    prevBtn.style.visibility = "visible";
 
     audioPlayer.src = item.audioFile;
     audioPlayer.load();
     audioPlayer.currentTime = 0;
+
+    // Restore prior stress selection (if any) as zero-indexed [lo, hi]
+    let restoreLo = null, restoreHi = null;
+    if (previous && previous.stress_selection_range) {
+      const parts = previous.stress_selection_range.split("-").map(Number);
+      restoreLo = parts[0] - 1;
+      restoreHi = parts[1] - 1;
+    }
+    buildLettersBox(item.gibberish, restoreLo, restoreHi);
+    step2Block.style.display = previous ? "block" : "none";
 
     choicesContainer.innerHTML = "";
     item.choices.forEach(choice => {
@@ -443,7 +682,7 @@
         selectedChoice = choice;
         [...choicesContainer.children].forEach(c => c.classList.remove("selected"));
         btn.classList.add("selected");
-        nextBtn.disabled = false;
+        updateNextButtonState();
       });
       choicesContainer.appendChild(btn);
     });
@@ -453,6 +692,7 @@
     const pct = (index / ITEMS.length) * 100;
     progressFill.style.width = pct + "%";
     progressLabel.textContent = `${index + 1} / ${ITEMS.length}`;
+    updateNextButtonState();
   }
 
   startBtn.addEventListener("click", () => {
@@ -462,10 +702,15 @@
 
   nextBtn.addEventListener("click", () => {
     const item = ITEMS[currentIndex];
+    const lo = dragStart !== null && dragEnd !== null ? Math.min(dragStart, dragEnd) : null;
+    const hi = dragStart !== null && dragEnd !== null ? Math.max(dragStart, dragEnd) : null;
     responses[item.id] = {
       participant_id: participantId,
       item_id: item.id,
       audio_file: item.audioFile,
+      gibberish_spelling: item.gibberish,
+      stress_selection_range: (lo !== null) ? `${lo + 1}-${hi + 1}` : "",
+      stress_selection_text: (lo !== null) ? item.gibberish.slice(lo, hi + 1) : "",
       selected_choice: selectedChoice,
       timestamp: new Date().toISOString(),
     };
@@ -481,17 +726,23 @@
   });
 
   prevBtn.addEventListener("click", () => {
-    if (currentIndex === 0) return;
+    if (currentIndex === 0) {
+      showScreen(screenPractice);
+      return;
+    }
     currentIndex--;
     loadItem(currentIndex);
   });
 
   function buildCsv() {
-    const header = "participant_id,item_id,audio_file,selected_choice,timestamp\n";
+    const header = "participant_id,item_id,audio_file,gibberish_spelling,stress_selection_range,stress_selection_text,selected_choice,timestamp\n";
     const rows = ITEMS
       .map(item => responses[item.id])
       .filter(Boolean)
-      .map(r => [r.participant_id, r.item_id, r.audio_file, r.selected_choice, r.timestamp].join(","));
+      .map(r => [
+        r.participant_id, r.item_id, r.audio_file, r.gibberish_spelling,
+        r.stress_selection_range, r.stress_selection_text, r.selected_choice, r.timestamp
+      ].join(","));
     return header + rows.join("\n");
   }
 
