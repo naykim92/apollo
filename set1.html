@@ -109,6 +109,12 @@
 .selection-readout { font-family: -apple-system, BlinkMacSystemFont, sans-serif; text-align: center; font-size: 13px; color: var(--muted); margin-bottom: 20px; min-height: 18px; }
 .selection-readout strong { color: var(--accent); }
 .step2-block { margin-top: 24px; }
+.example-pair-row { display: flex; gap: 12px; margin-bottom: 24px; }
+.example-pair-row .practice-item { flex: 1; margin-bottom: 0; min-width: 0; }
+.example-pair-row h3 { font-size: 13px; }
+@media (max-width: 480px) {
+  .example-pair-row { flex-direction: column; }
+}
 </style>
 </head>
 <body>
@@ -428,7 +434,7 @@
 
   const introExamplesContainer = document.getElementById("introExamplesContainer");
 
-  function renderIntroExample(ex) {
+  function buildIntroExampleCard(ex) {
     const div = document.createElement("div");
     div.className = "practice-item";
     const kindNote = ex.kind === "gibberish"
@@ -444,11 +450,20 @@
       ${kindNote}
       <audio controls src="${ex.audioFile}"></audio>
     `;
-    introExamplesContainer.appendChild(div);
+    return div;
   }
 
-  // Real-word examples first ...
-  INTRO_EXAMPLES.filter(ex => ex.kind === "real").forEach(renderIntroExample);
+  function renderExamplePairRow(exA, exB) {
+    const row = document.createElement("div");
+    row.className = "example-pair-row";
+    row.appendChild(buildIntroExampleCard(exA));
+    row.appendChild(buildIntroExampleCard(exB));
+    introExamplesContainer.appendChild(row);
+  }
+
+  // Real-word examples side by side ...
+  const realExamples = INTRO_EXAMPLES.filter(ex => ex.kind === "real");
+  renderExamplePairRow(realExamples[0], realExamples[1]);
 
   // ... then a transition explaining what's about to be compared ...
   const gibberishIntro = document.createElement("p");
@@ -462,8 +477,9 @@
      맞혀보세요.`;
   introExamplesContainer.appendChild(gibberishIntro);
 
-  // ... then the two gibberish examples.
-  INTRO_EXAMPLES.filter(ex => ex.kind === "gibberish").forEach(renderIntroExample);
+  // ... then the two gibberish examples, also side by side.
+  const gibberishExamples = INTRO_EXAMPLES.filter(ex => ex.kind === "gibberish");
+  renderExamplePairRow(gibberishExamples[0], gibberishExamples[1]);
 
   // ---------------------------------------------------------------------
   // PRACTICE SCREEN
