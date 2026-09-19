@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>운율 청취 실험</title>
+<title>Stress-Pattern Matching Experiment</title>
 <style>
   :root {
     --ink: #1a1a1a;
@@ -120,8 +120,8 @@
 <body>
 <div class="card">
 
-  <h1>운율 청취 실험</h1>
-  <div class="subtitle">소리를 듣고, 가장 가깝게 느껴지는 리듬을 골라주세요</div>
+  <h1>Stress-Pattern Matching Experiment</h1>
+  <div class="subtitle">Listen to a novel spoken word and choose the English word with the most similar stress pattern.</div>
 
   <div class="progress-track" id="progressTrack" style="display:none;">
     <div class="progress-fill" id="progressFill" style="width:0%;"></div>
@@ -130,71 +130,85 @@
 
   <div class="screen active" id="screen-start">
     <div class="instructions">
-      <p>사람이 언어를 습득하고 의사소통에 활용하는 데 있어, 소리는 중요한 역할을 합니다.
-      특히 특정한 단어에 나타난 강세나 책을 읽을 때의 리듬, 높낮이 등을 따로 배우지 않아도
-      우리는 그것을 자연스럽게 활용할 수 있습니다. 이러한 <strong>강세, 리듬, 높낮이</strong> 등을
-      <strong>운율(prosody)</strong>이라고 하며, 이러한 운율을 이해하고 활용하는 것을 "<strong>운율 감각</strong>"이라고 합니다.
-      여기서는 여러분의 운율 감각을 살피기 위해 "<u><strong>단어 음절 유추 실험</strong></u>"을 진행할 예정입니다.
-      먼저 아래에 제시된 오디오의 음성을 들어보세요. (▶︎ 버튼 누르기)</p>
+      <p>In this study, you will hear short <strong>nonsense (gibberish) words</strong>.
+      These sounds are not real English words and do not have meanings. Your task is to listen to
+      the <strong>stress pattern</strong> of each sound and decide which English word has the most similar stress pattern.</p>
+
+      <div class="info-box">
+        <h2>What is a stress pattern?</h2>
+        <p>In a multi-syllable word, one syllable is often heard as more prominent than the others.
+        For this task, focus on <strong>where the main stress falls</strong>. You do not need to identify
+        the gibberish word or guess what it means.</p>
+      </div>
+
+      <h2>Concrete example</h2>
+      <p>First, listen to two familiar English words. They contain the same number of syllables,
+      but the main stress falls in different positions.</p>
 
       <div id="introExamplesContainer"></div>
 
-      <p>이렇게 <strong>실제로 아는 단어가 아니어도</strong>, 순전히 강세와 리듬의
-      패턴만으로 "이건 어떤 단어와 닮았다"고 판단할 수 있는 능력을, 조금 어려운
-      말로는 <strong>추상적 운율 지식</strong>이라고 부릅니다.</p>
+      <p>The next two recordings are novel gibberish forms. Their segmental content is nearly the same,
+      but their stress patterns differ. One follows the stress pattern of <em>immediately</em> and the
+      other follows the stress pattern of <em>university</em>. This is the kind of comparison you will
+      make in the experiment.</p>
 
-      <h2>이 실험이 측정하는 것</h2>
-      <p>이번 실험은 바로 이 능력, 즉 <strong>단어 안의 강세 패턴을 얼마나 잘
-      알아채는지</strong>를 테스트합니다.</p>
-      <p>방법은 간단합니다. <strong>소리를 들으시고, 선택지에 있는 단어들의 소리를
-      머릿속으로 하나씩 떠올려 보면서, 방금 들은 소리와 가장 비슷한 리듬을 가진
-      단어를 고르시면 됩니다.</strong> 단어의 뜻을 몰라도, 그 소리가 무엇인지 전혀
-      감이 안 잡혀도 괜찮습니다.</p>
+      <h2>Your task on each trial</h2>
+      <ol style="line-height:1.9; padding-left:22px;">
+        <li>Play the gibberish audio and listen for where the strongest emphasis falls.</li>
+        <li>Read each of the four English options <strong>as you would normally pronounce it</strong>.</li>
+        <li>As you read each option, notice <strong>which syllable naturally receives the main stress</strong>.</li>
+        <li>Compare that stress pattern with the one you heard in the gibberish audio.</li>
+        <li>Choose the English word whose pattern of stressed and unstressed syllables is the closest match.</li>
+      </ol>
 
-      <h2>참고해 주세요!</h2>
+      <div class="info-box">
+        <p><strong>Important:</strong> Do not choose a word because its letters or individual sounds resemble
+        the gibberish, and do not use the word's meaning. Instead, mentally pronounce each option in your
+        usual way and pay attention to <strong>which syllable you naturally emphasize</strong>. Then compare
+        that pattern of stronger and weaker syllables with the pattern you heard in the audio.</p>
+      </div>
+
+      <h2>Before you begin</h2>
       <ul>
-        <li>이건 영어 실력을 테스트하는 시험이 아닙니다. 각 단어가 가지고 있는
-        고유의 강세 패턴에 대한 추상화 능력을 평가하는 것입니다.</li>
-        <li>소리는 다시 들으셔도 좋지만, 너무 오래 고민하지는 마세요. 첫 느낌을
-        따라 골라 주세요.</li>
-        <li>조용한 환경에서 집중해서 진행해 주세요.</li>
+        <li>Please use headphones or earphones if possible.</li>
+        <li>Complete the task in a quiet environment.</li>
+        <li>You may replay an audio clip, but please rely on your first clear judgment rather than overthinking.</li>
+        <li>This is not a vocabulary test.</li>
       </ul>
     </div>
 
-    <label for="participantId">참가자 ID</label>
-    <input type="text" id="participantId" placeholder="예: P01 또는 본인 이름">
+    <label for="participantId">Participant ID</label>
+    <input type="text" id="participantId" placeholder="e.g., Prolific ID or participant code">
     <div class="footer-row">
-      <button class="primary" id="startBtn">시작하기</button>
+      <button class="primary" id="startBtn">Continue to practice</button>
     </div>
   </div>
 
   <!-- Screen: practice -->
   <div class="screen" id="screen-practice">
     <div class="instructions">
-      <p>본격적으로 시작하기 전에, 몇 가지 예시를 더 들어보겠습니다. 각 예시마다
-      <strong>① 실제 단어</strong>를 먼저 들려드리고, 이어서
-      <strong>② 그 단어의 리듬을 가진 지블리시</strong>를 들려드립니다.</p>
+      <h2>Practice</h2>
+      <p>Before the main task, review two examples. Each example contains a real English word and
+      a gibberish recording produced with a matching stress pattern. These examples demonstrate
+      what “same stress pattern” means.</p>
     </div>
 
     <div id="practiceItemsContainer"></div>
 
     <div class="instructions">
-      <p>그럼 이제 연습 문제를 풀어볼까요? 이 문제는 <strong>점수에 반영되지
-      않습니다.</strong></p>
+      <p>Now try one practice question. This item is <strong>not scored</strong>.
+      Listen to the gibberish audio first. Then read each English option in your normal pronunciation,
+      notice which syllable receives the main stress, and choose the option whose stress pattern best matches the audio.</p>
     </div>
 
     <div class="practice-item" id="practiceQuestionBlock">
-      <h3>연습 문제 (점수에 반영되지 않습니다)</h3>
+      <h3>Practice item (not scored)</h3>
       <p style="font-family:-apple-system,sans-serif; font-size:14px; margin-bottom:14px;">
-        이제 직접 풀어보세요. 소리를 듣고 강세가 있다고 느껴지는 글자를 드래그로 표시한 뒤,
-        가장 비슷한 리듬의 단어를 골라보세요.
+        Listen to the audio and choose the English word whose stress pattern is most similar.
       </p>
       <audio controls src="society_gbrs.mp3" style="margin-bottom:16px;"></audio>
 
-      <div class="letters-box" id="practiceLettersBox"></div>
-      <div class="selection-readout" id="practiceSelectionReadout">글자를 드래그해서 강세 위치를 표시해 주세요</div>
-
-      <div class="step2-block" id="practiceStep2Block" style="display:none;">
+      <div class="step2-block" id="practiceStep2Block" style="display:block;">
         <div class="choices" id="practiceChoicesContainer"></div>
       </div>
 
@@ -202,8 +216,8 @@
     </div>
 
     <div class="footer-row">
-      <button class="primary" id="practiceBackBtn" style="background:var(--card-bg); color:var(--accent); border:1px solid var(--line);">이전</button>
-      <button class="primary" id="practiceContinueBtn">실전 시작하기</button>
+      <button class="primary" id="practiceBackBtn" style="background:var(--card-bg); color:var(--accent); border:1px solid var(--line);">Back</button>
+      <button class="primary" id="practiceContinueBtn">Start main task</button>
     </div>
   </div>
 
@@ -211,36 +225,30 @@
     <audio id="audioPlayer" controls></audio>
     <div id="audioDiag"></div>
 
-    <div class="step-label">STEP 1</div>
     <div class="step-instruction">
-      소리를 듣고, 아래 철자에서 <strong>강세가 있다고 느껴지는 글자를 드래그</strong>해서
-      표시해 주세요.
+      Listen to the gibberish word and notice where the main stress falls.
+      Then read each option as you would normally pronounce it and notice which syllable you naturally emphasize.
+      <strong>Which English word has the most similar stress pattern?</strong>
     </div>
-    <div class="letters-box" id="lettersBox"></div>
-    <div class="selection-readout" id="selectionReadout">글자를 드래그해서 강세 위치를 표시해 주세요</div>
 
-    <div class="step2-block" id="step2Block" style="display:none;">
-      <div class="step-label">STEP 2</div>
-      <div class="step-instruction">
-        방금 표시하신 강세 위치를 떠올리며, 소리와 가장 리듬이 비슷한 단어를 골라주세요.
-      </div>
+    <div class="step2-block" id="step2Block" style="display:block;">
       <div class="choices" id="choicesContainer"></div>
     </div>
 
     <div class="footer-row">
-      <button class="primary" id="prevBtn" style="background:var(--card-bg); color:var(--accent); border:1px solid var(--line);">이전</button>
-      <button class="primary" id="nextBtn" disabled>다음</button>
+      <button class="primary" id="prevBtn" style="background:var(--card-bg); color:var(--accent); border:1px solid var(--line);">Back</button>
+      <button class="primary" id="nextBtn" disabled>Next</button>
     </div>
   </div>
 
   <div class="screen" id="screen-done">
     <p class="summary">
-      모든 문항이 끝났습니다. 응답해 주셔서 감사합니다.<br><br>
-      아래 버튼을 누르면 결과가 자동으로 제출됩니다. 별도 이메일 앱이 필요 없습니다.
+      You have completed all items. Thank you for participating.<br><br>
+      Click the button below to submit your responses.
     </p>
     <div class="footer-row">
       <span class="footer-note" id="downloadStatus"></span>
-      <button class="primary" id="downloadBtn">제출하기</button>
+      <button class="primary" id="downloadBtn">Submit responses</button>
     </div>
   </div>
 
@@ -289,6 +297,16 @@
   const downloadStatus = document.getElementById("downloadStatus");
   const participantInput = document.getElementById("participantId");
 
+  // Auto-fill Prolific participant ID when present in the study URL.
+  const urlParams = new URLSearchParams(window.location.search);
+  const prolificPID = urlParams.get("PROLIFIC_PID");
+  const prolificStudyID = urlParams.get("STUDY_ID");
+  const prolificSessionID = urlParams.get("SESSION_ID");
+  if (prolificPID) {
+    participantInput.value = prolificPID;
+    participantInput.readOnly = true;
+  }
+
 
   // ---------------------------------------------------------------------
   // STEP 1: drag-to-select stress letters (per-item gibberish spelling)
@@ -329,7 +347,7 @@
     if (dragStart !== null && dragEnd !== null) {
       updateSelectionVisual();
     } else {
-      selectionReadout.textContent = "글자를 드래그해서 강세 위치를 표시해 주세요";
+      selectionReadout.textContent = "Drag across the letters to mark the stressed region.";
     }
   }
 
@@ -347,9 +365,8 @@
 
 
   function updateNextButtonState() {
-    const hasStress = dragStart !== null && dragEnd !== null;
     const hasChoice = !!selectedChoice;
-    nextBtn.disabled = !(hasStress && hasChoice);
+    nextBtn.disabled = !hasChoice;
   }
 
   function updateSelectionVisual() {
@@ -360,7 +377,7 @@
       el.classList.toggle("selected", i >= lo && i <= hi);
     });
     const selectedText = currentGibberish.slice(lo, hi + 1);
-    selectionReadout.innerHTML = `선택한 강세 구간: <strong>"${selectedText}"</strong> (${lo + 1}~${hi + 1}번째 글자)`;
+    selectionReadout.innerHTML = `Selected stressed region: <strong>"${selectedText}"</strong> (letters ${lo + 1}–${hi + 1})`;
   }
 
 
@@ -422,13 +439,13 @@
   //   kanubabisho_ba.mp3 (stress on "BA", matches university)
   // ---------------------------------------------------------------------
   const INTRO_EXAMPLES = [
-    { label: "단어 1", word: "immediately", audioFile: "immediately_target.mp3",
+    { label: "word 1", word: "immediately", audioFile: "immediately_target.mp3",
       syllables: ["im", "ME", "di", "ate", "ly"], stressIndex: 1, kind: "real" },
-    { label: "단어 2", word: "university", audioFile: "university_target.mp3",
+    { label: "word 2", word: "university", audioFile: "university_target.mp3",
       syllables: ["u", "ni", "VER", "si", "ty"], stressIndex: 2, kind: "real" },
-    { label: "새로운 소리 1", word: "kaNUbabisho", audioFile: "kanubabisho_nu.mp3",
+    { label: "Novel sound 1", word: "kaNUbabisho", audioFile: "kanubabisho_nu.mp3",
       syllables: ["ka", "NU", "ba", "bi", "sho"], stressIndex: 1, kind: "gibberish" },
-    { label: "새로운 소리 2", word: "kanuBAbisho", audioFile: "kanubabisho_ba.mp3",
+    { label: "Novel sound 2", word: "kanuBAbisho", audioFile: "kanubabisho_ba.mp3",
       syllables: ["ka", "nu", "BA", "bi", "sho"], stressIndex: 2, kind: "gibberish" },
   ];
 
@@ -439,7 +456,7 @@
     div.className = "practice-item";
     const kindNote = ex.kind === "gibberish"
       ? `<p style="font-family:-apple-system,sans-serif; font-size:13px; color:var(--muted); margin:4px 0 10px 0;">
-           (실제로는 존재하지 않는 소리입니다. 강세 위치를 비교해 보세요.)
+           (These are not real words. Compare where the main stress falls.)
          </p>`
       : "";
     div.innerHTML = `
@@ -471,10 +488,7 @@
   gibberishIntro.style.fontSize = "15px";
   gibberishIntro.style.lineHeight = "1.7";
   gibberishIntro.innerHTML =
-    `이번에는 실제로 존재하지 않는 새로운 소리를 두 개 들려드리겠습니다. 두 소리는
-     철자가 거의 똑같고, 오직 <strong>강세 위치</strong>만 다릅니다. 어느 쪽이
-     immediately와 리듬이 같고, 어느 쪽이 university와 리듬이 같은지 한번
-     맞혀보세요.`;
+    `Now listen to two novel sounds. Their spellings are nearly identical, but the <strong>stress position</strong> differs. Try to decide which one matches the stress pattern of <em>immediately</em> and which one matches the stress pattern of <em>university</em>.`;
   introExamplesContainer.appendChild(gibberishIntro);
 
   // ... then the two gibberish examples, also side by side.
@@ -508,16 +522,16 @@
     const div = document.createElement("div");
     div.className = "practice-item";
     div.innerHTML = `
-      <h3>예시 ${i + 1}: ${p.word}</h3>
+      <h3>Example ${i + 1}: ${p.word}</h3>
       <div class="pitch-figure" style="margin-top:0;">
         ${buildPitchSvg(p.syllables, p.stressIndex)}
       </div>
       <div class="practice-audio-row">
-        <label>① 실제 단어</label>
+        <label>① Real English word</label>
         <audio controls src="${p.targetFile}"></audio>
       </div>
       <div class="practice-audio-row">
-        <label>② 같은 리듬의 지블리시</label>
+        <label>② Gibberish with a matching stress pattern</label>
         <audio controls src="${p.gbrsFile}"></audio>
       </div>
     `;
@@ -532,95 +546,19 @@
   practiceItemsContainer.appendChild(practiceExampleRow);
 
 
-  // Practice question: styled like a real item (drag-to-select stress,
-  // then choose), but not scored, and with a two-strike retry: a first
-  // wrong answer prompts another try; a second wrong answer reveals the
-  // correct one.
-  //
-  // TODO: replace this with the actual gibberish spelling recorded for
-  // society_gbrs.mp3 (same convention as the real items' `gibberish`
-  // field) so the letters box shows the real letters instead of a
-  // placeholder.
-  const PRACTICE_GIBBERISH_SPELLING = "gaseiali"; // society
-  const PRACTICE_CORRECT_SPANS = ["se", "sei"]; // acceptable stress-marking answers
-
+  // Practice question for the human benchmark.
+  // Expert annotators validate stress location separately; participants only perform stress-pattern matching.
   const PRACTICE_QUESTION = {
     audioFile: "society_gbrs.mp3",
     answer: "society",
     choices: ["actually", "society", "information", "nevertheless"],
   };
 
-  const practiceLettersBox = document.getElementById("practiceLettersBox");
-  const practiceSelectionReadout = document.getElementById("practiceSelectionReadout");
   const practiceStep2Block = document.getElementById("practiceStep2Block");
   const practiceChoicesContainer = document.getElementById("practiceChoicesContainer");
   const practiceFeedback = document.getElementById("practiceFeedback");
 
-  let practiceDragStart = null;
-  let practiceDragEnd = null;
-  let practiceIsDragging = false;
-  let practiceStep1Passed = false;
-
-  function updatePracticeSelectionVisual() {
-    if (practiceDragStart === null || practiceDragEnd === null) return;
-    const lo = Math.min(practiceDragStart, practiceDragEnd);
-    const hi = Math.max(practiceDragStart, practiceDragEnd);
-    [...practiceLettersBox.children].forEach((el, i) => {
-      el.classList.toggle("selected", i >= lo && i <= hi);
-    });
-    const selectedText = PRACTICE_GIBBERISH_SPELLING.slice(lo, hi + 1);
-    practiceSelectionReadout.innerHTML = `선택한 강세 구간: <strong>"${selectedText}"</strong> (${lo + 1}~${hi + 1}번째 글자)`;
-  }
-
-  PRACTICE_GIBBERISH_SPELLING.split("").forEach((ch, i) => {
-    const span = document.createElement("div");
-    span.className = "letter";
-    span.textContent = ch;
-    span.dataset.index = i;
-    span.addEventListener("pointerdown", (e) => {
-      if (practiceStep1Passed) return;
-      practiceIsDragging = true;
-      practiceDragStart = i;
-      practiceDragEnd = i;
-      updatePracticeSelectionVisual();
-      e.preventDefault();
-    });
-    span.addEventListener("pointerenter", () => {
-      if (practiceIsDragging && !practiceStep1Passed) {
-        practiceDragEnd = i;
-        updatePracticeSelectionVisual();
-      }
-    });
-    practiceLettersBox.appendChild(span);
-  });
-
-  document.addEventListener("pointerup", () => {
-    if (practiceIsDragging) {
-      practiceIsDragging = false;
-      if (practiceDragStart !== null && practiceDragEnd !== null && !practiceStep1Passed) {
-        const lo = Math.min(practiceDragStart, practiceDragEnd);
-        const hi = Math.max(practiceDragStart, practiceDragEnd);
-        const selectedText = PRACTICE_GIBBERISH_SPELLING.slice(lo, hi + 1);
-
-        practiceFeedback.style.display = "block";
-        if (PRACTICE_CORRECT_SPANS.includes(selectedText)) {
-          practiceStep1Passed = true;
-          practiceFeedback.style.background = "#e6f4ea";
-          practiceFeedback.style.color = "#1e7a34";
-          practiceFeedback.textContent = "정답입니다! 이제 비슷한 리듬의 단어를 골라보세요.";
-          practiceStep2Block.style.display = "block";
-        } else {
-          practiceFeedback.style.background = "#fdecea";
-          practiceFeedback.style.color = "#b3261e";
-          practiceFeedback.textContent = "틀렸습니다! 다시 시도해보세요.";
-          // reset so the participant can try marking a different span
-          practiceDragStart = null;
-          practiceDragEnd = null;
-          [...practiceLettersBox.children].forEach(el => el.classList.remove("selected"));
-        }
-      }
-    }
-  });
+  let practiceSelectedChoice = null;
 
   PRACTICE_QUESTION.choices.forEach(choice => {
     const btn = document.createElement("button");
@@ -630,6 +568,18 @@
     btn.addEventListener("click", () => {
       [...practiceChoicesContainer.children].forEach(c => c.classList.remove("selected"));
       btn.classList.add("selected");
+      practiceSelectedChoice = choice;
+
+      practiceFeedback.style.display = "block";
+      if (choice === PRACTICE_QUESTION.answer) {
+        practiceFeedback.style.background = "#e6f4ea";
+        practiceFeedback.style.color = "#1e7a34";
+        practiceFeedback.textContent = "Correct. This word has the closest stress pattern to the practice audio.";
+      } else {
+        practiceFeedback.style.background = "#fff7e6";
+        practiceFeedback.style.color = "#8a5a00";
+        practiceFeedback.textContent = "Compare where the main stress falls in each option, then try another choice.";
+      }
     });
     practiceChoicesContainer.appendChild(btn);
   });
@@ -649,7 +599,7 @@
     const err = audioPlayer.error;
     const codeNames = {1: "ABORTED", 2: "NETWORK", 3: "DECODE", 4: "SRC_NOT_SUPPORTED"};
     const codeName = err ? (codeNames[err.code] || err.code) : "unknown";
-    showAudioDiag("오디오 로드 오류: " + codeName + (err && err.message ? " - " + err.message : ""));
+    showAudioDiag("Audio loading error: " + codeName + (err && err.message ? " - " + err.message : ""));
   });
   audioPlayer.addEventListener("loadedmetadata", () => {
     audioDiag.style.display = "none";
@@ -665,7 +615,7 @@
     const previous = responses[item.id] || null;
     const previousAnswer = previous ? previous.selected_choice : null;
     selectedChoice = previousAnswer;
-    nextBtn.textContent = index === ITEMS.length - 1 ? "완료" : "다음";
+    nextBtn.textContent = index === ITEMS.length - 1 ? "Finish" : "Next";
     prevBtn.disabled = false;
     prevBtn.style.visibility = "visible";
 
@@ -673,15 +623,9 @@
     audioPlayer.load();
     audioPlayer.currentTime = 0;
 
-    // Restore prior stress selection (if any) as zero-indexed [lo, hi]
-    let restoreLo = null, restoreHi = null;
-    if (previous && previous.stress_selection_range) {
-      const parts = previous.stress_selection_range.split("-").map(Number);
-      restoreLo = parts[0] - 1;
-      restoreHi = parts[1] - 1;
-    }
-    buildLettersBox(item.gibberish, restoreLo, restoreHi);
-    step2Block.style.display = previous ? "block" : "none";
+    // Stress-location validation is performed separately by expert annotators.
+    // The main human benchmark asks only for stress-pattern matching.
+    step2Block.style.display = "block";
 
     choicesContainer.innerHTML = "";
     item.choices.forEach(choice => {
@@ -716,15 +660,11 @@
 
   nextBtn.addEventListener("click", () => {
     const item = ITEMS[currentIndex];
-    const lo = dragStart !== null && dragEnd !== null ? Math.min(dragStart, dragEnd) : null;
-    const hi = dragStart !== null && dragEnd !== null ? Math.max(dragStart, dragEnd) : null;
     responses[item.id] = {
       participant_id: participantId,
       item_id: item.id,
       audio_file: item.audioFile,
       gibberish_spelling: item.gibberish,
-      stress_selection_range: (lo !== null) ? `${lo + 1}-${hi + 1}` : "",
-      stress_selection_text: (lo !== null) ? item.gibberish.slice(lo, hi + 1) : "",
       selected_choice: selectedChoice,
       timestamp: new Date().toISOString(),
     };
@@ -749,13 +689,13 @@
   });
 
   function buildCsv() {
-    const header = "participant_id,item_id,audio_file,gibberish_spelling,stress_selection_range,stress_selection_text,selected_choice,timestamp\n";
+    const header = "participant_id,item_id,audio_file,gibberish_spelling,selected_choice,timestamp\n";
     const rows = ITEMS
       .map(item => responses[item.id])
       .filter(Boolean)
       .map(r => [
         r.participant_id, r.item_id, r.audio_file, r.gibberish_spelling,
-        r.stress_selection_range, r.stress_selection_text, r.selected_choice, r.timestamp
+        r.selected_choice, r.timestamp
       ].join(","));
     return header + rows.join("\n");
   }
@@ -766,7 +706,7 @@
   downloadBtn.addEventListener("click", async () => {
     const csvContent = buildCsv();
     downloadBtn.disabled = true;
-    downloadStatus.textContent = "제출 중...";
+    downloadStatus.textContent = "Submitting...";
 
     try {
       const res = await fetch(FORMSPREE_ENDPOINT, {
@@ -781,15 +721,15 @@
       });
 
       if (res.ok) {
-        downloadStatus.textContent = "제출이 완료되었습니다. 감사합니다!";
-        downloadBtn.textContent = "제출 완료";
+        downloadStatus.textContent = "Submission complete. Thank you!";
+        downloadBtn.textContent = "Submitted";
       } else {
         throw new Error("Formspree responded with status " + res.status);
       }
     } catch (err) {
       // Fallback: mailto + visible CSV text, in case the network request
       // fails (offline, ad-blocker, etc.)
-      downloadStatus.textContent = "자동 제출에 실패했습니다. 아래 방법으로 보내주세요.";
+      downloadStatus.textContent = "Automatic submission failed. Please use the fallback below.";
       downloadBtn.disabled = false;
 
       const mailtoUrl =
@@ -801,7 +741,7 @@
         const label = document.createElement("p");
         label.className = "footer-note";
         label.style.marginTop = "16px";
-        label.innerHTML = `자동 제출이 안 되면, <a href="${mailtoUrl}">이 링크</a>로 이메일을 보내시거나, 아래 내용을 복사해서 ${RESEARCHER_EMAIL} 로 보내주세요.`;
+        label.innerHTML = `If automatic submission fails, <a href="${mailtoUrl}">use this email link</a> or copy the results below and send them to ${RESEARCHER_EMAIL}.`;
         const pre = document.createElement("pre");
         pre.id = "csvFallback";
         pre.style.whiteSpace = "pre-wrap";
