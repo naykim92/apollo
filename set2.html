@@ -718,6 +718,7 @@
       if (res.ok) {
         downloadStatus.textContent = "Submission complete. Thank you!";
         downloadBtn.textContent = "Submitted";
+        window.location.href = "https://app.prolific.com/submissions/complete?cc=CS6P1ES2";
       } else {
         throw new Error("Formspree responded with status " + res.status);
       }
